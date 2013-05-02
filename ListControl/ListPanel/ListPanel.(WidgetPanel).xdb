@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<WidgetPanel>
+	<Name>ListPanel</Name>
+	<BackLayer href="Textures/ListPanel.(WidgetLayerTiledTexture).xdb#xpointer(/WidgetLayerTiledTexture)" />
+	<Visible>false</Visible>
+	<Children>
+		<Item href="ListItem/ListItem.(WidgetPanel).xdb#xpointer(/WidgetPanel)" />
+		<Item href="AddItemButton/AddItemButton.(WidgetButton).xdb#xpointer(/WidgetButton)" />
+		<Item href="EditControl/EditControl.(WidgetEditLine).xdb#xpointer(/WidgetEditLine)" />
+	</Children>
+	<Placement>
+		<X>
+			<Align>WIDGET_ALIGN_LOW</Align>
+			<Pos>0</Pos>
+			<Size>300</Size>
+		</X>
+		<Y>
+			<Align>WIDGET_ALIGN_LOW</Align>
+			<Pos>20</Pos>
+			<Size>70</Size>
+		</Y>
+	</Placement>
+</WidgetPanel>
