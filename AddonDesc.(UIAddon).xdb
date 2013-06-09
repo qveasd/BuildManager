@@ -5,7 +5,7 @@
 	<ScriptFileRefs>
 		<Item href="/Mods/SampleCommon/SampleAddonBase.lua" />
 		<Item href="LibDnD.lua" />
-		<Item href="ListControl/ListControl.lua" />
+		<Item href="Menu/Menu.lua" />
 		<Item href="BuildFunctions.lua" />
 		<Item href="Script.lua" />
 	</ScriptFileRefs>

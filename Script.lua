@@ -2,13 +2,13 @@
 -- AddonManager support
 
 function onMemUsageRequest( params )
-    userMods.SendEvent( "U_EVENT_ADDON_MEM_USAGE_RESPONSE", { sender = common.GetAddonName(), memUsage = gcinfo() } )
+	userMods.SendEvent( "U_EVENT_ADDON_MEM_USAGE_RESPONSE", { sender = common.GetAddonName(), memUsage = gcinfo() } )
 end
 
 function onToggleDND( params )
-    if params.target == common.GetAddonName() then
-        DnD:Enable( mainForm:GetChildChecked( "ListButton", true ), params.state )
-    end
+	if params.target == common.GetAddonName() then
+		DnD:Enable( mainForm:GetChildChecked( "ListButton", true ), params.state )
+	end
 end
 
 function onToggleVisibility( params )
@@ -104,19 +104,55 @@ end
 
 ----------------------------------------------------------------------------------------------------
 
+Global( "BuildsMenu", nil )
+
+function onSaveBuild( params )
+	local wtEdit = params.widget:GetParent():GetChildChecked( "BuildNameEdit", true )
+	local text = userMods.FromWString( wtEdit:GetText() )
+
+	if text ~= "" then
+		SaveCurrentBuild( text )
+		-- refresh menu
+		onShowList()
+		onShowList()
+	end
+end
+
+function onShowList( params )
+	if not BuildsMenu or not BuildsMenu:IsValid() then
+		local menu = {}
+		for i, v in ipairs( BuildsTable ) do
+			local index = i
+
+			local subMenu = {
+				{ name = "Rename" },
+				{ name = "Delete", onActivate = function() DeleteBuild( i ); onShowList(); onShowList() end },
+				{ name = "Export" },
+			}
+
+			menu[i] = {
+				name = v.name,
+				onActivate = function() LoadBuild( index ) end,
+				submenu = subMenu
+			}
+		end
+		local desc = mainForm:GetChildChecked( "SaveBuildTemplate", true ):GetWidgetDesc()
+		table.insert( menu, { widget = mainForm:CreateWidgetByDesc( desc ) } )
+
+		local pos = mainForm:GetChildChecked( "ListButton", true ):GetPlacementPlain()
+		BuildsMenu = ShowMenu( { x = pos.posX, y = pos.posY + pos.sizeY }, menu )
+	else
+		DestroyMenu( BuildsMenu )
+		BuildsMenu = nil
+	end
+end
+
+----------------------------------------------------------------------------------------------------
+
 function Init()
 	LoadBuildTable()
 
-	InitList()
-	ActivateItemHandler = LoadBuild
-	DeleteItemHandler = DeleteBuild
-	AddItemHandler = SaveCurrentBuild
-
-	for i, build in ipairs( BuildsTable ) do
-		AddListItem( build.name )
-	end
-
-	DnD:Init( 527, mainForm:GetChildChecked( "ListButton", true ), mainForm:GetChildChecked( "ListControl", true ), true )
+	DnD:Init( 527, mainForm:GetChildChecked( "ListButton", true ), mainForm:GetChildChecked( "ListButton", true ), true )
 
 	common.RegisterEventHandler( onInfoRequest, "SCRIPT_ADDON_INFO_REQUEST" )
 	common.RegisterEventHandler( onMemUsageRequest, "U_EVENT_ADDON_MEM_USAGE_REQUEST" )
@@ -124,6 +160,11 @@ function Init()
 	common.RegisterEventHandler( onToggleVisibility, "SCRIPT_TOGGLE_VISIBILITY" )
 
 	common.RegisterEventHandler( onSlashCommand, "EVENT_UNKNOWN_SLASH_COMMAND" );
+
+	common.RegisterReactionHandler( onSaveBuild, "SaveBuildReaction" )
+	common.RegisterReactionHandler( onShowList, "ListButtonReaction" )
+
+	InitMenu()
 end
 
 Init()

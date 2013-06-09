@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<WidgetPanel>
+	<Name>SaveBuildTemplate</Name>
+	<Visible>false</Visible>
+	<Children>
+		<Item href="ActivateItemButton/ActivateItemButton.(WidgetButton).xdb#xpointer(/WidgetButton)" />
+		<Item href="EditControl.(WidgetEditLine).xdb#xpointer(/WidgetEditLine)" />
+	</Children>
+	<Placement>
+		<X>
+			<Align>WIDGET_ALIGN_LOW</Align>
+			<Pos>16</Pos>
+			<Size>200</Size>
+		</X>
+		<Y>
+			<Align>WIDGET_ALIGN_LOW</Align>
+			<Pos>16</Pos>
+			<Size>32</Size>
+		</Y>
+	</Placement>
+</WidgetPanel>
