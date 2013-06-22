@@ -141,6 +141,7 @@ function onShowList( params )
 
 		local pos = mainForm:GetChildChecked( "ListButton", true ):GetPlacementPlain()
 		BuildsMenu = ShowMenu( { x = pos.posX, y = pos.posY + pos.sizeY }, menu )
+		BuildsMenu:GetChildChecked( "BuildNameEdit", true ):SetFocus( true )
 	else
 		DestroyMenu( BuildsMenu )
 		BuildsMenu = nil
@@ -162,7 +163,7 @@ function Init()
 	common.RegisterEventHandler( onSlashCommand, "EVENT_UNKNOWN_SLASH_COMMAND" );
 
 	common.RegisterReactionHandler( onSaveBuild, "SaveBuildReaction" )
-	common.RegisterReactionHandler( onShowList, "ListButtonReaction" )
+	common.RegisterReactionHandler( onShowList, "ShowBuildsReaction" )
 
 	InitMenu()
 end

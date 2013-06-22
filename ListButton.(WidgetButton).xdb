@@ -20,7 +20,7 @@
 	<Variants>
 		<Item>
 			<TextFileRef href="ListButtonText.txt" />
-			<Reaction>ListButtonReaction</Reaction>
+			<Reaction>ShowBuildsReaction</Reaction>
 		</Item>
 	</Variants>
 </WidgetButton>
