@@ -80,26 +80,26 @@ function onSlashCommand( params )
 		return
 	end
 
-	local statsCount = avatar.GetCurrencyInfo( avatar.GetCurrencyId( "stat_point" ) ).value
 	local commands = {}
 	for w in iter do
 		local count, len, stat, op, arg = string.find( w, "^([\192-\255])([+=]+)(%d*)" )
 
 		local statId = statIdTable[ stat ]
-		local toAdd = 0
-		if op == "++" then
-			toAdd = statsCount
-		elseif op == "+" then
-			toAdd = multByTalents( statId, arg )
-		elseif op == "=" then
-			toAdd = multByTalents( statId, arg - avatar.GetInnateStats()[ statId ].effective )
-		end
-		toAdd = math.min( statsCount, toAdd )
-		statsCount = statsCount - toAdd
+		if statId then
+			local toAdd = 0
+			if op == "++" then
+				toAdd = avatar.GetFreeStatPointsToDistribute()
+			elseif op == "+" then
+				toAdd = multByTalents( statId, arg )
+			elseif op == "=" then
+				toAdd = multByTalents( statId, arg - avatar.GetInnateStats()[ statId ].effective )
+			end
+			toAdd = math.min( toAdd, avatar.GetFreeStatPointsToDistribute() )
 
-		commands[ statId ] = toAdd
+			avatar.ImproveInnateStat( statId, toAdd )
+		end
 	end
-	avatar.ImproveInnateStats( commands )
+	avatar.DistributeStatPoints()
 end
 
 ----------------------------------------------------------------------------------------------------
