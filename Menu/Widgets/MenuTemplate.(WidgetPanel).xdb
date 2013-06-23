@@ -7,6 +7,7 @@
 		<Item href="MenuItemTemplate.(WidgetButton).xdb#xpointer(/WidgetButton)" />
 		<Item href="MenuItemSubmenuTemplate.(WidgetButton).xdb#xpointer(/WidgetButton)" />
 		<Item href="MenuItemCombinedTemplate.(WidgetPanel).xdb#xpointer(/WidgetPanel)" />
+		<Item href="MenuItemEditControl.(WidgetEditLine).xdb#xpointer(/WidgetEditLine)" />
 	</Children>
 	<Placement>
 		<X>

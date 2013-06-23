@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <WidgetEditLine>
-	<Name>BuildNameEdit</Text>
+	<Name>MenuItemEditTemplate</Text>
 	<Priority>0</Priority>
 	<Placement>
 		<QuantumScale>false</QuantumScale>
@@ -15,26 +15,27 @@
 		<Y>
 			<Align>WIDGET_ALIGN_LOW</Align>
 			<Sizing>WIDGET_SIZING_DEFAULT</Sizing>
-			<Pos>0</Pos>
+			<Pos>10000</Pos>
 			<Size>32</Size>
 		</Y>
 	</Placement>
-	<Visible>true</Visible>
-	<Enabled>true</Enabled>
+	<Visible>false</Visible>
+	<Enabled>false</Enabled>
 	<TabOrder>0</TabOrder>
 	<bindSections />
 	<TransparentInput>false</TransparentInput>
 	<PickChildrenOnly>false</PickChildrenOnly>
 	<IgnoreDblClick>false</IgnoreDblClick>
 	<fade>1</fade>
-	<selectionLayer href="../Menu/Textures/Selection.(WidgetLayerSimpleTexture).xdb#xpointer(/WidgetLayerSimpleTexture)" />
-	<Cursor1Layer href="../Menu/Textures/Cursor.(WidgetLayerSimpleTexture).xdb#xpointer(/WidgetLayerSimpleTexture)" />
+	<selectionLayer href="../Textures/Selection.(WidgetLayerSimpleTexture).xdb#xpointer(/WidgetLayerSimpleTexture)" />
+	<Cursor1Layer href="../Textures/Cursor.(WidgetLayerSimpleTexture).xdb#xpointer(/WidgetLayerSimpleTexture)" />
 	<Cursor2Layer href="" />
 	<CursorWidth>2</CursorWidth>
 	<CursorChangeTimeMs>500</CursorChangeTimeMs>
-	<ReactionEsc>ShowBuildsReaction</ReactionEsc>
-	<ReactionEnter>SaveBuildReaction</ReactionEnter>
+	<ReactionEsc>RenameCancelReaction</ReactionEsc>
+	<ReactionEnter>RenameBuildReaction</ReactionEnter>
 	<ReactionChanged />
+	<reactionFocusChanged>RenameFocusChanged</reactionFocusChanged>
 	<TextStyle>
 		<multiline>false</multiline>
 		<wrapText>true</wrapText>

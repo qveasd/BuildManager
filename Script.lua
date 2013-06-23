@@ -112,7 +112,6 @@ function onSaveBuild( params )
 
 	if text ~= "" then
 		SaveCurrentBuild( text )
-		-- refresh menu
 		onShowList()
 		onShowList()
 	end
@@ -125,8 +124,8 @@ function onShowList( params )
 			local index = i
 
 			local subMenu = {
-				{ name = "Rename" },
-				{ name = "Delete", onActivate = function() DeleteBuild( i ); onShowList(); onShowList() end },
+				{ name = "Rename", onActivate = function() onRenameBuild( index ) end },
+				{ name = "Delete", onActivate = function() DeleteBuild( index ); onShowList(); onShowList() end },
 				{ name = "Export" },
 			}
 
@@ -136,7 +135,7 @@ function onShowList( params )
 				submenu = subMenu
 			}
 		end
-		local desc = mainForm:GetChildChecked( "SaveBuildTemplate", true ):GetWidgetDesc()
+		local desc = mainForm:GetChildChecked( "SaveBuildTemplate", false ):GetWidgetDesc()
 		table.insert( menu, { widget = mainForm:CreateWidgetByDesc( desc ) } )
 
 		local pos = mainForm:GetChildChecked( "ListButton", true ):GetPlacementPlain()
@@ -149,11 +148,75 @@ function onShowList( params )
 end
 
 ----------------------------------------------------------------------------------------------------
+-- Renaming
+
+Global( "RenameBuildIndex", nil )
+
+function GetMenuItem( index )
+	local children = BuildsMenu:GetNamedChildren()
+	table.sort( children,
+		function( a, b )
+			if a:GetName() == "MenuItemEditTemplate" then return false end
+			if b:GetName() == "MenuItemEditTemplate" then return true end
+			return a:GetPlacementPlain().posY < b:GetPlacementPlain().posY
+		end )
+	return children[ index ]
+end
+
+function onRenameBuild( index )
+	if RenameBuildIndex then
+		onRenameCancel()
+	end
+
+	RenameBuildIndex = index
+
+	local item = GetMenuItem( index )
+	item:Show( false )
+
+	local edit = BuildsMenu:GetChildChecked( "MenuItemEditTemplate", false )
+	edit:SetText( userMods.ToWString( BuildsTable[ index ].name ) )
+	edit:SetPlacementPlain( item:GetPlacementPlain() )
+	edit:Show( true )
+	edit:Enable( true )
+	edit:SetFocus( true )
+	BuildsMenu:GetChildChecked( "BuildNameEdit", true ):SetFocus( false )
+end
+
+function onRenameCancel( params )
+	local item = GetMenuItem( RenameBuildIndex )
+	item:Show( true )
+
+	local edit = BuildsMenu:GetChildChecked( "MenuItemEditTemplate", false )
+	edit:Show( false )
+	edit:Enable( false )
+
+	BuildsMenu:GetChildChecked( "BuildNameEdit", true ):SetFocus( true )
+	RenameBuildIndex = nil
+end
+
+function onRenameAccept( params )
+	local edit = BuildsMenu:GetChildChecked( "MenuItemEditTemplate", false )
+	BuildsTable[ RenameBuildIndex ].name = userMods.FromWString( edit:GetText() )
+	SaveBuildTable()
+	RenameBuildIndex = nil
+
+	onShowList()
+	onShowList()
+end
+
+function onRenameFocus( params )
+	if not params.active then
+		onRenameAccept( params )
+	end
+end
+
+----------------------------------------------------------------------------------------------------
 
 function Init()
 	LoadBuildTable()
 
-	DnD:Init( 527, mainForm:GetChildChecked( "ListButton", true ), mainForm:GetChildChecked( "ListButton", true ), true )
+	local button = mainForm:GetChildChecked( "ListButton", true )
+	DnD:Init( 527, button, button, true )
 
 	common.RegisterEventHandler( onInfoRequest, "SCRIPT_ADDON_INFO_REQUEST" )
 	common.RegisterEventHandler( onMemUsageRequest, "U_EVENT_ADDON_MEM_USAGE_REQUEST" )
@@ -164,6 +227,9 @@ function Init()
 
 	common.RegisterReactionHandler( onSaveBuild, "SaveBuildReaction" )
 	common.RegisterReactionHandler( onShowList, "ShowBuildsReaction" )
+	common.RegisterReactionHandler( onRenameCancel, "RenameCancelReaction" )
+	common.RegisterReactionHandler( onRenameAccept, "RenameBuildReaction" )
+	common.RegisterReactionHandler( onRenameFocus, "RenameFocusChanged" )
 
 	InitMenu()
 end

@@ -14,7 +14,7 @@
 		</X>
 		<Y>
 			<Align>WIDGET_ALIGN_LOW</Align>
-			<Pos>16</Pos>
+			<Pos>10000</Pos>
 			<Size>32</Size>
 		</Y>
 	</Placement>

@@ -20,7 +20,7 @@
 --	ShowMenu( { x = 100, y = 100 }, menu )
 
 function ShowMenu( screenPosition, menu, parent )
-	local menuWidget = mainForm:CreateWidgetByDesc( WtMenuTemplate:GetWidgetDesc() )
+	local menuWidget = mainForm:CreateWidgetByDesc( MenuTemplate )
 	mainForm:AddChild( menuWidget )
 
 	local menuPlacement = menuWidget:GetPlacementPlain()
@@ -28,17 +28,15 @@ function ShowMenu( screenPosition, menu, parent )
 	local height = margin
 
 	for _, item in ipairs( menu ) do
-		if not item.widget then
-			item.widget = CreateItemWidget( item )
-		end
+		local itemWidget = item.widget or CreateItemWidget( item )
 
-		local placement = item.widget:GetPlacementPlain()
+		local placement = itemWidget:GetPlacementPlain()
 		placement.posY = height
-		item.widget:SetPlacementPlain( placement )
+		itemWidget:SetPlacementPlain( placement )
 		height = height + placement.sizeY
 
-		menuWidget:AddChild( item.widget )
-		item.widget:Show( true )
+		menuWidget:AddChild( itemWidget )
+		itemWidget:Show( true )
 	end
 
 	local menuPlacement = menuWidget:GetPlacementPlain()
@@ -62,18 +60,14 @@ function DestroyMenu( menuWidget )
 	menuWidget:DestroyWidget()
 end
 
--- Create in-place edit with item text
-function RenameItem( menu, index )
-end
-
 ----------------------------------------------------------------------------------------------------
 
 Global( "Actions", {} )
 
-Global( "WtMenuTemplate", nil )
-Global( "WtMenuItemTemplate", nil )		-- serves as a template for creating new list items
-Global( "WtMenuSubmenuTemplate", nil )	-- template for submenus
-Global( "WtMenuCombinedTemplate", nil ) -- template for an item with submenu
+Global( "MenuTemplate", nil )
+Global( "MenuItemTemplate", nil )		-- serves as a template for creating new list items
+Global( "MenuSubmenuTemplate", nil )	-- template for submenus
+Global( "MenuCombinedTemplate", nil ) -- template for an item with submenu
 
 function SaveAction( widget, action )
 	local name = tostring( math.random() )
@@ -98,16 +92,16 @@ function CreateItemWidget( item )
 
 	local widget
 	if item.submenu and item.onActivate then
-		widget = mainForm:CreateWidgetByDesc( WtMenuCombinedTemplate:GetWidgetDesc() )
+		widget = mainForm:CreateWidgetByDesc( MenuCombinedTemplate )
 		widget:GetChildChecked( "ItemTextSmall", true ):SetVal( "button_label", text )
 		SaveAction( widget:GetChildChecked( "ItemTextSmall", true ), item.onActivate )
 		SaveAction( widget:GetChildChecked( "SubmenuButtonSmall", true ), { menu = item.submenu } )
 	elseif item.submenu then
-		widget = mainForm:CreateWidgetByDesc( WtMenuSubmenuTemplate:GetWidgetDesc() )
+		widget = mainForm:CreateWidgetByDesc( MenuSubmenuTemplate )
 		widget:SetVal( "button_label", text )
 		SaveAction( widget, { menu = item.submenu } )
 	else
-		widget = mainForm:CreateWidgetByDesc( WtMenuItemTemplate:GetWidgetDesc() )
+		widget = mainForm:CreateWidgetByDesc( MenuItemTemplate )
 		widget:SetVal( "button_label", text )
 		if item.onActivate then
 			SaveAction( widget, item.onActivate )
@@ -170,10 +164,10 @@ end
 ----------------------------------------------------------------------------------------------------
 
 function InitMenu()
-	WtMenuTemplate = mainForm:GetChildChecked( "MenuTemplate", true )
-	WtMenuItemTemplate = mainForm:GetChildChecked( "MenuItemTemplate", true )
-	WtMenuSubmenuTemplate = mainForm:GetChildChecked( "MenuItemSubmenuTemplate", true )
-	WtMenuCombinedTemplate = mainForm:GetChildChecked( "MenuItemCombinedTemplate", true )
+	MenuItemTemplate = mainForm:GetChildChecked( "MenuItemTemplate", true ):GetWidgetDesc()
+	MenuSubmenuTemplate = mainForm:GetChildChecked( "MenuItemSubmenuTemplate", true ):GetWidgetDesc()
+	MenuCombinedTemplate = mainForm:GetChildChecked( "MenuItemCombinedTemplate", true ):GetWidgetDesc()
+	MenuTemplate = mainForm:GetChildChecked( "MenuTemplate", true ):GetWidgetDesc()
 
 	common.RegisterReactionHandler( OnActivate, "MenuActivateItemReaction" )
 	common.RegisterReactionHandler( OnOpenSubmenu, "MenuOpenSubmenuReaction" )
