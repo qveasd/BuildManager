@@ -43,6 +43,7 @@ function ShowMenu( screenPosition, menu, parent )
 	menuPlacement.posX = screenPosition.x
 	menuPlacement.posY = screenPosition.y
 	menuPlacement.sizeY = height + margin
+	MakeVisible( menuPlacement )
 	menuWidget:SetPlacementPlain( menuPlacement )
 
 	SaveAction( menuWidget, { parentMenu = parent and parent:GetName(), childMenu = nil } )
@@ -119,6 +120,16 @@ function GetParentMenu( childWidget )
 	return menu
 end
 
+function MakeVisible( placement )
+	local posConverter = widgetsSystem:GetPosConverterParams()
+	if placement.posX + placement.sizeX > posConverter.fullVirtualSizeX then
+		placement.posX = posConverter.fullVirtualSizeX - placement.sizeX
+	end
+	if placement.posY + placement.sizeY > posConverter.fullVirtualSizeY then
+		placement.posY = posConverter.fullVirtualSizeY - placement.sizeY
+	end
+end
+
 ----------------------------------------------------------------------------------------------------
 -- Reaction handlers
 
@@ -171,4 +182,5 @@ function InitMenu()
 
 	common.RegisterReactionHandler( OnActivate, "MenuActivateItemReaction" )
 	common.RegisterReactionHandler( OnOpenSubmenu, "MenuOpenSubmenuReaction" )
+	common.RegisterReactionHandler( OnOpenSubmenu, "MouseOverReaction" )
 end

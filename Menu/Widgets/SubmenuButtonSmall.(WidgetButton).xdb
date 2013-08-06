@@ -21,4 +21,5 @@
 			<Reaction>MenuOpenSubmenuReaction</Reaction>
 		</Item>
 	</Variants>
+			<reactionOnPointing>MouseOverReaction</reactionOnPointing>
 </WidgetPanel>

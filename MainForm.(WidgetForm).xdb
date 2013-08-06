@@ -1,11 +1,12 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <WidgetForm>
 	<Name>BuildManager</Name>
-	<Priority>1000</Priority>
+	<Priority>10000</Priority>
 	<Children>
 		<Item href="ListButton.(WidgetButton).xdb#xpointer(/WidgetButton)" />
 		<Item href="Menu/Widgets/MenuTemplate.(WidgetPanel).xdb#xpointer(/WidgetPanel)" />
 		<Item href="SaveBuildControl/SaveBuildTemplate.(WidgetPanel).xdb#xpointer(/WidgetPanel)" />
+		<Item href="WikiLinkEdit.(WidgetEditLine).xdb#xpointer(/WidgetEditLine)" />
 	</Children>
 	<BackLayer href="" />
 	<FrontLayer href="" />

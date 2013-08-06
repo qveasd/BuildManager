@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <WidgetButton>
 	<Name>ListButton</Name>
+	<Priority>4000</Priority>
 	<Header>
 		<Prototype href="/Mods/SampleCommon/Button/ButtonRegular.Prototype.(WidgetButton).xdb#xpointer(/WidgetButton)" />
 	</Header>

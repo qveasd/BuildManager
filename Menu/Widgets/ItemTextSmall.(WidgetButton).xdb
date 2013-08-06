@@ -25,6 +25,7 @@
 			<LayerHighlight href="../Textures/ButtonHighlight.(WidgetLayerTiledTexture).xdb#xpointer(/WidgetLayerSimpleTexture)" />
 			<ReactionOnUp>true</ReactionOnUp>
 			<Reaction>MenuActivateItemReaction</Reaction>
+			<reactionOnPointing>PointReaction</reactionOnPointing>
 
 			<TextFileRef href="MenuItemText.txt" />
 			<StateNormal>

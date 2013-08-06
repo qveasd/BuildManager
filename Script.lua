@@ -111,9 +111,17 @@ function onSaveBuild( params )
 	local text = userMods.FromWString( wtEdit:GetText() )
 
 	if text ~= "" then
-		SaveCurrentBuild( text )
-		onShowList()
-		onShowList()
+		if string.find( text, "allodswiki.ru/" ) then
+			local build = ImportWikiLink( text )
+			if build then
+				LoadBuild( build )
+			end
+			onShowList()
+		else
+			SaveCurrentBuild( text )
+			onShowList()
+			onShowList()
+		end
 	end
 end
 
@@ -123,15 +131,18 @@ function onShowList( params )
 		for i, v in ipairs( BuildsTable ) do
 			local index = i
 
+			local desc = mainForm:GetChildChecked( "WikiLinkEdit", false ):GetWidgetDesc()
+			local linkEdit = mainForm:CreateWidgetByDesc( desc )
+			linkEdit:SetText( userMods.ToWString( ExportWikiLink( BuildsTable[ index ] ) ) )
 			local subMenu = {
 				{ name = "Rename", onActivate = function() onRenameBuild( index ) end },
 				{ name = "Delete", onActivate = function() DeleteBuild( index ); onShowList(); onShowList() end },
-				{ name = "Export" },
+				{ widget = linkEdit }
 			}
 
 			menu[i] = {
 				name = v.name,
-				onActivate = function() LoadBuild( index ) end,
+				onActivate = function() LoadBuild( BuildsTable[ index ] ) end,
 				submenu = subMenu
 			}
 		end
@@ -230,6 +241,7 @@ function Init()
 	common.RegisterReactionHandler( onRenameCancel, "RenameCancelReaction" )
 	common.RegisterReactionHandler( onRenameAccept, "RenameBuildReaction" )
 	common.RegisterReactionHandler( onRenameFocus, "RenameFocusChanged" )
+	common.RegisterReactionHandler( onShowList, "WikiEscReaction" )
 
 	InitMenu()
 end

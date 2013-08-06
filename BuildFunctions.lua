@@ -34,9 +34,7 @@ function SaveCurrentBuild( name )
 	SaveBuildTable()
 end
 
-function LoadBuild( index )
-	local build = BuildsTable[ index ]
-
+function LoadBuild( build )
 	local hasLearnedTalent = LoadBaseTalents( build )
 	local hasLearnedField = LoadFieldTalents( build )
 

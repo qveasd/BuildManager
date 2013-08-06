@@ -7,6 +7,7 @@
 		<Item href="LibDnD.lua" />
 		<Item href="Menu/Menu.lua" />
 		<Item href="BuildFunctions.lua" />
+		<Item href="ImportExport.lua" />
 		<Item href="Script.lua" />
 	</ScriptFileRefs>
 	<MainFormId>Main</MainFormId>
