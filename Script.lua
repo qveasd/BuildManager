@@ -125,29 +125,30 @@ function onSaveBuild( params )
 	end
 end
 
+function createLinkEdit( buildIndex )
+	local desc = mainForm:GetChildChecked( "WikiLinkEdit", false ):GetWidgetDesc()
+	local linkEdit = mainForm:CreateWidgetByDesc( desc )
+	linkEdit:SetText( userMods.ToWString( ExportWikiLink( BuildsTable[ buildIndex ] ) ) )
+	return linkEdit
+end
+
 function onShowList( params )
 	if not BuildsMenu or not BuildsMenu:IsValid() then
 		local menu = {}
 		for i, v in ipairs( BuildsTable ) do
 			local index = i
-
-			local desc = mainForm:GetChildChecked( "WikiLinkEdit", false ):GetWidgetDesc()
-			local linkEdit = mainForm:CreateWidgetByDesc( desc )
-			linkEdit:SetText( userMods.ToWString( ExportWikiLink( BuildsTable[ index ] ) ) )
-			local subMenu = {
-				{ name = "Rename", onActivate = function() onRenameBuild( index ) end },
-				{ name = "Delete", onActivate = function() DeleteBuild( index ); onShowList(); onShowList() end },
-				{ widget = linkEdit }
-			}
-
 			menu[i] = {
 				name = v.name,
 				onActivate = function() LoadBuild( BuildsTable[ index ] ) end,
-				submenu = subMenu
+				submenu = {
+					{ name = "Rename", onActivate = function() onRenameBuild( index ) end },
+					{ name = "Delete", onActivate = function() DeleteBuild( index ); onShowList(); onShowList() end },
+					{ createWidget = function() return createLinkEdit( index ) end  }
+				}
 			}
 		end
 		local desc = mainForm:GetChildChecked( "SaveBuildTemplate", false ):GetWidgetDesc()
-		table.insert( menu, { widget = mainForm:CreateWidgetByDesc( desc ) } )
+		table.insert( menu, { createWidget = function() return mainForm:CreateWidgetByDesc( desc ) end } )
 
 		local pos = mainForm:GetChildChecked( "ListButton", true ):GetPlacementPlain()
 		BuildsMenu = ShowMenu( { x = pos.posX, y = pos.posY + pos.sizeY }, menu )

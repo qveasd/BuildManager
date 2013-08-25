@@ -5,7 +5,7 @@
 --	 onActivate = func,					-- function to be called when the item is clicked
 --	 submenu = { }						-- a submenu to be opened on click. If onActivate is also present
 --	 									-- then	the arrow must be clicked to open submenu
---	 widget = CreateWidgetByDesc(...)	-- custom menu item, no other fields are used
+--	 createWidget = function() CreateWidgetByDesc(desc) end	-- custom menu item, no other fields are used
 -- }
 --
 -- Usage example:
@@ -28,7 +28,12 @@ function ShowMenu( screenPosition, menu, parent )
 	local height = margin
 
 	for _, item in ipairs( menu ) do
-		local itemWidget = item.widget or CreateItemWidget( item )
+		local itemWidget
+		if item.createWidget then
+			itemWidget = item.createWidget()
+		else
+			itemWidget = CreateItemWidget( item )
+		end
 
 		local placement = itemWidget:GetPlacementPlain()
 		placement.posY = height
@@ -83,7 +88,7 @@ function ClearActions( widget )
 	end
 
 	local children = widget:GetNamedChildren()
-	for _, child in ipairs( children ) do
+	for _, child in pairs( children ) do
 		ClearActions( child )
 	end
 end
