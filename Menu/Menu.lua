@@ -19,6 +19,16 @@
 --	} } }
 --	ShowMenu( { x = 100, y = 100 }, menu )
 
+local Actions = {} -- maps widget to action executed upon clicking it
+
+local MenuTemplate = mainForm:GetChildChecked( "MenuTemplate", true ):GetWidgetDesc()
+-- serves as a template for creating new menu items
+local MenuItemTemplate = mainForm:GetChildChecked( "MenuItemTemplate", true ):GetWidgetDesc()
+-- template for submenus
+local MenuSubmenuTemplate = mainForm:GetChildChecked( "MenuItemSubmenuTemplate", true ):GetWidgetDesc()
+-- template for an item with submenu
+local MenuCombinedTemplate = mainForm:GetChildChecked( "MenuItemCombinedTemplate", true ):GetWidgetDesc()
+
 function ShowMenu( screenPosition, menu, parent )
 	local menuWidget = mainForm:CreateWidgetByDesc( MenuTemplate )
 	mainForm:AddChild( menuWidget )
@@ -51,13 +61,13 @@ function ShowMenu( screenPosition, menu, parent )
 	MakeVisible( menuPlacement )
 	menuWidget:SetPlacementPlain( menuPlacement )
 
-	SaveAction( menuWidget, { parentMenu = parent and parent:GetName(), childMenu = nil } )
+	SaveAction( menuWidget, { parentMenu = parent and parent:GetInstanceId(), childMenu = nil } )
 	menuWidget:Show( true )
 	return menuWidget
 end
 
 function DestroyMenu( menuWidget )
-	local childMenu = Actions[ menuWidget:GetName() ].childMenu
+	local childMenu = Actions[ menuWidget:GetInstanceId() ].childMenu
 	if childMenu then
 		DestroyMenu( childMenu )
 	end
@@ -68,21 +78,12 @@ end
 
 ----------------------------------------------------------------------------------------------------
 
-Global( "Actions", {} )
-
-Global( "MenuTemplate", nil )
-Global( "MenuItemTemplate", nil )		-- serves as a template for creating new list items
-Global( "MenuSubmenuTemplate", nil )	-- template for submenus
-Global( "MenuCombinedTemplate", nil ) -- template for an item with submenu
-
 function SaveAction( widget, action )
-	local name = tostring( math.random() )
-	Actions[ name ] = action
-	widget:SetName( name )
+	Actions[ widget:GetInstanceId() ] = action
 end
 
 function ClearActions( widget )
-	local name = widget:GetName()
+	local name = widget:GetInstanceId()
 	if Actions[ name ] then
 		Actions[ name ] = nil
 	end
@@ -101,11 +102,11 @@ function CreateItemWidget( item )
 		widget = mainForm:CreateWidgetByDesc( MenuCombinedTemplate )
 		widget:GetChildChecked( "ItemTextSmall", true ):SetVal( "button_label", text )
 		SaveAction( widget:GetChildChecked( "ItemTextSmall", true ), item.onActivate )
-		SaveAction( widget:GetChildChecked( "SubmenuButtonSmall", true ), { menu = item.submenu } )
+		SaveAction( widget:GetChildChecked( "SubmenuButtonSmall", true ), item.submenu )
 	elseif item.submenu then
 		widget = mainForm:CreateWidgetByDesc( MenuSubmenuTemplate )
 		widget:SetVal( "button_label", text )
-		SaveAction( widget, { menu = item.submenu } )
+		SaveAction( widget, item.submenu )
 	else
 		widget = mainForm:CreateWidgetByDesc( MenuItemTemplate )
 		widget:SetVal( "button_label", text )
@@ -140,23 +141,24 @@ end
 
 function OnActivate( params )
 	if params.active then
-		local action = Actions[ params.widget:GetName() ]
-		if action then
-			action()
-		end
+		local action = Actions[ params.widget:GetInstanceId() ]
 
 		local menu = GetParentMenu( params.widget )
-		local parentMenuInfo = Actions[ Actions[ menu:GetName() ].parentMenu ]
+		local parentMenuInfo = Actions[ Actions[ menu:GetInstanceId() ].parentMenu ]
 		if parentMenuInfo then
 			parentMenuInfo.childMenu = nil
 		end
 		DestroyMenu( menu )
+
+		if action then
+			action()
+		end
 	end
 end
 
 function OnOpenSubmenu( params )
 	if params.active then
-		local action = Actions[ params.widget:GetName() ]
+		local action = Actions[ params.widget:GetInstanceId() ]
 		if action then
 			local wt = params.widget
 			local pos = { x = wt:GetPlacementPlain().sizeX, y = 0 }
@@ -168,11 +170,12 @@ function OnOpenSubmenu( params )
 			end
 
 			local menuWidget = GetParentMenu( params.widget )
-			local menuInfo = Actions[ menuWidget:GetName() ]
+			local menuInfo = Actions[ menuWidget:GetInstanceId() ]
 			if menuInfo.childMenu then
 				DestroyMenu( menuInfo.childMenu )
+				menuInfo.childMenu = nil
 			end
-			menuInfo.childMenu = ShowMenu( pos, action.menu, menuWidget )
+			menuInfo.childMenu = ShowMenu( pos, action, menuWidget )
 		end
 	end
 end
@@ -180,11 +183,6 @@ end
 ----------------------------------------------------------------------------------------------------
 
 function InitMenu()
-	MenuItemTemplate = mainForm:GetChildChecked( "MenuItemTemplate", true ):GetWidgetDesc()
-	MenuSubmenuTemplate = mainForm:GetChildChecked( "MenuItemSubmenuTemplate", true ):GetWidgetDesc()
-	MenuCombinedTemplate = mainForm:GetChildChecked( "MenuItemCombinedTemplate", true ):GetWidgetDesc()
-	MenuTemplate = mainForm:GetChildChecked( "MenuTemplate", true ):GetWidgetDesc()
-
 	common.RegisterReactionHandler( OnActivate, "MenuActivateItemReaction" )
 	common.RegisterReactionHandler( OnOpenSubmenu, "MenuOpenSubmenuReaction" )
 	common.RegisterReactionHandler( OnOpenSubmenu, "MouseOverReaction" )

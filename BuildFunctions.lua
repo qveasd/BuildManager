@@ -10,11 +10,11 @@ Global( "BuildsTable", {} )
 ----------------------------------------------------------------------------------------------------
 -- Save/Load
 
-function SaveBuildTable()
+function SaveBuildsTable()
 	userMods.SetAvatarConfigSection( "ZBuilds", BuildsTable )
 end
 
-function LoadBuildTable()
+function LoadBuildsTable()
 	BuildsTable = userMods.GetAvatarConfigSection( "ZBuilds" )
 	if not BuildsTable then
 		BuildsTable = {}
@@ -31,7 +31,7 @@ function SaveCurrentBuild( name )
 	SaveKeyBinding( build )
 
 	table.insert( BuildsTable, build )
-	SaveBuildTable()
+	SaveBuildsTable()
 end
 
 function LoadBuild( build )
@@ -54,7 +54,7 @@ end
 
 function DeleteBuild( index )
 	table.remove( BuildsTable, index )
-	SaveBuildTable()
+	SaveBuildsTable()
 end
 
 ----------------------------------------------------------------------------------------------------

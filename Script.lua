@@ -104,7 +104,7 @@ end
 
 ----------------------------------------------------------------------------------------------------
 
-Global( "BuildsMenu", nil )
+local BuildsMenu = nil
 
 function onSaveBuild( params )
 	local wtEdit = params.widget:GetParent():GetChildChecked( "BuildNameEdit", true )
@@ -162,7 +162,7 @@ end
 ----------------------------------------------------------------------------------------------------
 -- Renaming
 
-Global( "RenameBuildIndex", nil )
+local RenameBuildIndex = nil
 
 function GetMenuItem( index )
 	local children = BuildsMenu:GetNamedChildren()
@@ -209,7 +209,7 @@ end
 function onRenameAccept( params )
 	local edit = BuildsMenu:GetChildChecked( "MenuItemEditTemplate", false )
 	BuildsTable[ RenameBuildIndex ].name = userMods.FromWString( edit:GetText() )
-	SaveBuildTable()
+	SaveBuildsTable()
 	RenameBuildIndex = nil
 
 	onShowList()
@@ -225,7 +225,7 @@ end
 ----------------------------------------------------------------------------------------------------
 
 function Init()
-	LoadBuildTable()
+	LoadBuildsTable()
 
 	local button = mainForm:GetChildChecked( "ListButton", true )
 	DnD:Init( 527, button, button, true )
