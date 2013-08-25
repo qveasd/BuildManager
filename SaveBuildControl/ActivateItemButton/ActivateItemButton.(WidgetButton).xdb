@@ -27,4 +27,5 @@
 			<Reaction>SaveBuildReaction</Reaction>
 		</Item>
 	</Variants>
+	<reactionOnPointing>ItemMouseOverReaction</reactionOnPointing>
 </WidgetButton>

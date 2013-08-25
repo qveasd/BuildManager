@@ -35,6 +35,7 @@
 	<ReactionEsc>ShowBuildsReaction</ReactionEsc>
 	<ReactionEnter>SaveBuildReaction</ReactionEnter>
 	<ReactionChanged />
+	<reactionOnPointing>ItemMouseOverReaction</reactionOnPointing>
 	<TextStyle>
 		<multiline>false</multiline>
 		<wrapText>true</wrapText>

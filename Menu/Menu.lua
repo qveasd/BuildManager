@@ -120,7 +120,7 @@ end
 
 function GetParentMenu( childWidget )
 	local menu = childWidget
-	while not mainForm:GetChildUnchecked( menu:GetName(), false ) do
+	while menu:GetParent():GetInstanceId() ~= mainForm:GetInstanceId() do
 		menu = menu:GetParent()
 	end
 	return menu
@@ -180,10 +180,22 @@ function OnOpenSubmenu( params )
 	end
 end
 
+function OnCloseSubmenu( params )
+	if params.active then
+		local menuWidget = GetParentMenu( params.widget )
+		local menuInfo = Actions[ menuWidget:GetInstanceId() ]
+		if menuInfo.childMenu then
+			DestroyMenu( menuInfo.childMenu )
+			menuInfo.childMenu = nil
+		end
+	end
+end
+
 ----------------------------------------------------------------------------------------------------
 
 function InitMenu()
 	common.RegisterReactionHandler( OnActivate, "MenuActivateItemReaction" )
 	common.RegisterReactionHandler( OnOpenSubmenu, "MenuOpenSubmenuReaction" )
-	common.RegisterReactionHandler( OnOpenSubmenu, "MouseOverReaction" )
+	common.RegisterReactionHandler( OnOpenSubmenu, "SubmenuMouseOverReaction" )
+	common.RegisterReactionHandler( OnCloseSubmenu, "ItemMouseOverReaction" )
 end

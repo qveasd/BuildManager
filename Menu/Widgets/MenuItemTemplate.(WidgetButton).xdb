@@ -32,4 +32,5 @@
 			</StateNormal>
 		</Item>
 	</Variants>
+	<reactionOnPointing>ItemMouseOverReaction</reactionOnPointing>
 </WidgetButton>
