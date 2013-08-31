@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <WidgetEditLine>
-	<Name>MenuItemEditTemplate</Text>
+	<Name>ItemEditTemplate</Text>
 	<Priority>0</Priority>
 	<Placement>
 		<QuantumScale>false</QuantumScale>

@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<WidgetButton>
+	<Name>CombinedSubmenu</Name>
+	<BackLayer href="..\Textures\SubmenuArrow.(WidgetLayerTiledTexture).xdb#xpointer(/WidgetLayerTiledTexture)" />
+	<Visible>true</Visible>
+	<Placement>
+		<X>
+			<Align>WIDGET_ALIGN_LOW</Align>
+			<Pos>164</Pos>
+			<Size>32</Size>
+		</X>
+		<Y>
+			<Align>WIDGET_ALIGN_LOW</Align>
+			<Pos>0</Pos>
+			<Size>32</Size>
+		</Y>
+	</Placement>
+	<Variants>
+		<Item>
+			<LayerHighlight href="../Textures/ArrowHighlight.(WidgetLayerTiledTexture).xdb#xpointer(/WidgetLayerSimpleTexture)" />
+			<Reaction>MenuOpenSubmenuReaction</Reaction>
+		</Item>
+	</Variants>
+	<reactionOnPointing>SubmenuMouseOverReaction</reactionOnPointing>
+</WidgetPanel>

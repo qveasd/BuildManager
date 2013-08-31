@@ -10,13 +10,13 @@
 			<Align>WIDGET_ALIGN_LOW</Align>
 			<Sizing>WIDGET_SIZING_DEFAULT</Sizing>
 			<Pos>16</Pos>
-			<Size>196</Size>
+			<Size>300</Size>
 		</X>
 		<Y>
 			<Align>WIDGET_ALIGN_LOW</Align>
 			<Sizing>WIDGET_SIZING_DEFAULT</Sizing>
 			<Pos>16</Pos>
-			<Size>64</Size>
+			<Size>96</Size>
 		</Y>
 	</Placement>
 	<Visible>false</Visible>

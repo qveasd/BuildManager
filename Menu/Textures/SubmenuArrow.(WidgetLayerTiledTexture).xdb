@@ -7,8 +7,8 @@
 	<textureItem href="SubmenuArrow.(UISingleTexture).xdb#xpointer(/UISingleTexture)" />
 	<Layout>
 		<LeftX>0</LeftX>
-		<MiddleX>32</MiddleX>
-		<RightX>0</RightX>
+		<MiddleX>0</MiddleX>
+		<RightX>32</RightX>
 		<TopY>0</TopY>
 		<MiddleY>32</MiddleY>
 		<BottomY>0</BottomY>

@@ -1,24 +1,35 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <WidgetButton>
-	<Name>SubmenuButtonSmall</Name>
+	<Name>SubmenuTemplate</Name>
 	<BackLayer href="..\Textures\SubmenuArrow.(WidgetLayerTiledTexture).xdb#xpointer(/WidgetLayerTiledTexture)" />
-	<Visible>true</Visible>
+	<Visible>false</Visible>
 	<Placement>
 		<X>
 			<Align>WIDGET_ALIGN_LOW</Align>
-			<Pos>164</Pos>
-			<Size>32</Size>
+			<Pos>16</Pos>
+			<Size>200</Size>
 		</X>
 		<Y>
 			<Align>WIDGET_ALIGN_LOW</Align>
-			<Pos>0</Pos>
+			<Pos>10000</Pos>
 			<Size>32</Size>
 		</Y>
 	</Placement>
+	<IgnoreDblClick>true</IgnoreDblClick>
+	<TextTag>button_label</TextTag>
+	<TextStyle>
+		<ellipsis>false</ellipsis>
+		<Align>ALIGNY_MIDDLE</Align>
+	</TextStyle>
 	<Variants>
 		<Item>
 			<LayerHighlight href="../Textures/ButtonHighlight.(WidgetLayerTiledTexture).xdb#xpointer(/WidgetLayerSimpleTexture)" />
 			<Reaction>MenuOpenSubmenuReaction</Reaction>
+
+			<TextFileRef href="MenuItemText.txt" />
+			<StateNormal>
+				<FormatFileRef href="MenuItemFormat.txt" />
+			</StateNormal>
 		</Item>
 	</Variants>
 	<reactionOnPointing>SubmenuMouseOverReaction</reactionOnPointing>

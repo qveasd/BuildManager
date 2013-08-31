@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <WidgetPanel>
-	<Name>MenuItemCombinedTemplate</Name>
+	<Name>CombinedTemplate</Name>
 	<Visible>false</Visible>
 	<Children>
-		<Item href="ItemTextSmall.(WidgetButton).xdb#xpointer(/WidgetButton)" />
-		<Item href="SubmenuButtonSmall.(WidgetButton).xdb#xpointer(/WidgetButton)" />
+		<Item href="CombinedItem.(WidgetButton).xdb#xpointer(/WidgetButton)" />
+		<Item href="CombinedSubmenu.(WidgetButton).xdb#xpointer(/WidgetButton)" />
 	</Children>
 	<Placement>
 		<X>

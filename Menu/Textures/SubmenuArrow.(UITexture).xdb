@@ -10,7 +10,7 @@
 	<realHeight>32</realHeight>
 	<disableLODControl>false</disableLODControl>
 	<alphaTex>true</alphaTex>
-	<binaryFileSize>429</binaryFileSize>
+	<binaryFileSize>211</binaryFileSize>
 	<binaryFile href="SubmenuArrow.(UITexture).bin" />
 	<wrap>false</wrap>
 </UITexture>

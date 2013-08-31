@@ -3,7 +3,7 @@
 	<mipSW>-1</mipSW>
 	<mipsNumber>1</mipsNumber>
 	<generateMipChain>false</generateMipChain>
-	<type>DXT1</type>
+	<type>DXT5</type>
 	<width>32</width>
 	<height>32</height>
 	<realWidth>32</realWidth>

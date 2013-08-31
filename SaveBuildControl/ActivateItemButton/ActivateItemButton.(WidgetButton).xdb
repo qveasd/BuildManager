@@ -15,7 +15,7 @@
 	<IgnoreDblClick>true</IgnoreDblClick>
 	<Variants>
 		<Item>
-			<LayerHighlight href="../../Textures/ButtonHighlight.(WidgetLayerTiledTexture).xdb#xpointer(/WidgetLayerTiledTexture)" />
+			<LayerHighlight href="ActivateItemButtonHighlight.(WidgetLayerTiledTexture).xdb#xpointer(/WidgetLayerTiledTexture)" />
 			<PushedOffset x="-2" y="2" />
 			<StateNormal>
 				<LayerMain href="ActivateItemButtonNormal.(WidgetLayerTiledTexture).xdb#xpointer(/WidgetLayerTiledTexture)" />

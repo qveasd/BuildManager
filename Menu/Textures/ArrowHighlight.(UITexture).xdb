@@ -10,7 +10,7 @@
 	<realHeight>32</realHeight>
 	<disableLODControl>false</disableLODControl>
 	<alphaTex>true</alphaTex>
-	<binaryFileSize>469</binaryFileSize>
-	<binaryFile href="ActivateItemButtonNormal.(UITexture).bin" />
+	<binaryFileSize>455</binaryFileSize>
+	<binaryFile href="ArrowHighlight.(UITexture).bin" />
 	<wrap>false</wrap>
 </UITexture>

@@ -1,16 +1,15 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <WidgetButton>
-	<Name>MenuItemTemplate</Name>
-	<Visible>false</Visible>
+	<Name>CombinedItem</Name>
 	<Placement>
 		<X>
 			<Align>WIDGET_ALIGN_LOW</Align>
-			<Pos>16</Pos>
-			<Size>200</Size>
+			<Pos>0</Pos>
+			<Size>164</Size>
 		</X>
 		<Y>
 			<Align>WIDGET_ALIGN_LOW</Align>
-			<Pos>10000</Pos>
+			<Pos>0</Pos>
 			<Size>32</Size>
 		</Y>
 	</Placement>
@@ -20,11 +19,13 @@
 		<ellipsis>false</ellipsis>
 		<Align>ALIGNY_MIDDLE</Align>
 	</TextStyle>
+	<Visible>true</Visible>
 	<Variants>
 		<Item>
 			<LayerHighlight href="../Textures/ButtonHighlight.(WidgetLayerTiledTexture).xdb#xpointer(/WidgetLayerSimpleTexture)" />
 			<ReactionOnUp>true</ReactionOnUp>
 			<Reaction>MenuActivateItemReaction</Reaction>
+			<reactionOnPointing>PointReaction</reactionOnPointing>
 
 			<TextFileRef href="MenuItemText.txt" />
 			<StateNormal>

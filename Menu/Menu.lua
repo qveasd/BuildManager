@@ -1,5 +1,6 @@
 -- Functions for menu creation and manipulation
--- A menu is a table of menu items, which can contain the following fields (none are required):
+-- A menu is defined by a table of menu items, which can contain the following fields
+-- (none are required):
 -- {
 --	 name = "item",						-- menu item text
 --	 onActivate = func,					-- function to be called when the item is clicked
@@ -21,13 +22,11 @@
 
 local Actions = {} -- maps widget to action executed upon clicking it
 
+-- templates for creating menu parts
 local MenuTemplate = mainForm:GetChildChecked( "MenuTemplate", true ):GetWidgetDesc()
--- serves as a template for creating new menu items
-local MenuItemTemplate = mainForm:GetChildChecked( "MenuItemTemplate", true ):GetWidgetDesc()
--- template for submenus
-local MenuSubmenuTemplate = mainForm:GetChildChecked( "MenuItemSubmenuTemplate", true ):GetWidgetDesc()
--- template for an item with submenu
-local MenuCombinedTemplate = mainForm:GetChildChecked( "MenuItemCombinedTemplate", true ):GetWidgetDesc()
+local ItemTemplate = mainForm:GetChildChecked( "ItemTemplate", true ):GetWidgetDesc()
+local SubmenuTemplate = mainForm:GetChildChecked( "SubmenuTemplate", true ):GetWidgetDesc()
+local CombinedTemplate = mainForm:GetChildChecked( "CombinedTemplate", true ):GetWidgetDesc()
 
 function ShowMenu( screenPosition, menu, parent )
 	local menuWidget = mainForm:CreateWidgetByDesc( MenuTemplate )
@@ -35,6 +34,7 @@ function ShowMenu( screenPosition, menu, parent )
 
 	local menuPlacement = menuWidget:GetPlacementPlain()
 	local margin = menuPlacement.sizeY / 2
+	local width = 0
 	local height = margin
 
 	for _, item in ipairs( menu ) do
@@ -49,6 +49,7 @@ function ShowMenu( screenPosition, menu, parent )
 		placement.posY = height
 		itemWidget:SetPlacementPlain( placement )
 		height = height + placement.sizeY
+		width = math.max( width, placement.sizeX );
 
 		menuWidget:AddChild( itemWidget )
 		itemWidget:Show( true )
@@ -57,6 +58,7 @@ function ShowMenu( screenPosition, menu, parent )
 	local menuPlacement = menuWidget:GetPlacementPlain()
 	menuPlacement.posX = screenPosition.x
 	menuPlacement.posY = screenPosition.y
+	menuPlacement.sizeX = width + margin * 2
 	menuPlacement.sizeY = height + margin
 	MakeVisible( menuPlacement )
 	menuWidget:SetPlacementPlain( menuPlacement )
@@ -99,16 +101,16 @@ function CreateItemWidget( item )
 
 	local widget
 	if item.submenu and item.onActivate then
-		widget = mainForm:CreateWidgetByDesc( MenuCombinedTemplate )
-		widget:GetChildChecked( "ItemTextSmall", true ):SetVal( "button_label", text )
-		SaveAction( widget:GetChildChecked( "ItemTextSmall", true ), item.onActivate )
-		SaveAction( widget:GetChildChecked( "SubmenuButtonSmall", true ), item.submenu )
+		widget = mainForm:CreateWidgetByDesc( CombinedTemplate )
+		widget:GetChildChecked( "CombinedItem", true ):SetVal( "button_label", text )
+		SaveAction( widget:GetChildChecked( "CombinedItem", true ), item.onActivate )
+		SaveAction( widget:GetChildChecked( "CombinedSubmenu", true ), item.submenu )
 	elseif item.submenu then
-		widget = mainForm:CreateWidgetByDesc( MenuSubmenuTemplate )
+		widget = mainForm:CreateWidgetByDesc( SubmenuTemplate )
 		widget:SetVal( "button_label", text )
 		SaveAction( widget, item.submenu )
 	else
-		widget = mainForm:CreateWidgetByDesc( MenuItemTemplate )
+		widget = mainForm:CreateWidgetByDesc( ItemTemplate )
 		widget:SetVal( "button_label", text )
 		if item.onActivate then
 			SaveAction( widget, item.onActivate )

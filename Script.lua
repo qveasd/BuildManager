@@ -143,7 +143,8 @@ function onShowList( params )
 				submenu = {
 					{ name = "Rename", onActivate = function() onRenameBuild( index ) end },
 					{ name = "Delete", onActivate = function() DeleteBuild( index ); onShowList(); onShowList() end },
-					{ createWidget = function() return createLinkEdit( index ) end  }
+					{ name = "Update", onActivate = function() UpdateBuild( index ) end },
+					{ name = "AllodsWiki.ru link", submenu = { { createWidget = function() return createLinkEdit( index ) end } } },
 				}
 			}
 		end
@@ -168,8 +169,8 @@ function GetMenuItem( index )
 	local children = BuildsMenu:GetNamedChildren()
 	table.sort( children,
 		function( a, b )
-			if a:GetName() == "MenuItemEditTemplate" then return false end
-			if b:GetName() == "MenuItemEditTemplate" then return true end
+			if a:GetName() == "ItemEditTemplate" then return false end
+			if b:GetName() == "ItemEditTemplate" then return true end
 			return a:GetPlacementPlain().posY < b:GetPlacementPlain().posY
 		end )
 	return children[ index ]
@@ -185,7 +186,7 @@ function onRenameBuild( index )
 	local item = GetMenuItem( index )
 	item:Show( false )
 
-	local edit = BuildsMenu:GetChildChecked( "MenuItemEditTemplate", false )
+	local edit = BuildsMenu:GetChildChecked( "ItemEditTemplate", false )
 	edit:SetText( userMods.ToWString( BuildsTable[ index ].name ) )
 	edit:SetPlacementPlain( item:GetPlacementPlain() )
 	edit:Show( true )
@@ -198,7 +199,7 @@ function onRenameCancel( params )
 	local item = GetMenuItem( RenameBuildIndex )
 	item:Show( true )
 
-	local edit = BuildsMenu:GetChildChecked( "MenuItemEditTemplate", false )
+	local edit = BuildsMenu:GetChildChecked( "ItemEditTemplate", false )
 	edit:Show( false )
 	edit:Enable( false )
 
@@ -207,7 +208,7 @@ function onRenameCancel( params )
 end
 
 function onRenameAccept( params )
-	local edit = BuildsMenu:GetChildChecked( "MenuItemEditTemplate", false )
+	local edit = BuildsMenu:GetChildChecked( "ItemEditTemplate", false )
 	BuildsTable[ RenameBuildIndex ].name = userMods.FromWString( edit:GetText() )
 	SaveBuildsTable()
 	RenameBuildIndex = nil

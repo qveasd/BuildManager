@@ -34,6 +34,13 @@ function SaveCurrentBuild( name )
 	SaveBuildsTable()
 end
 
+function UpdateBuild( index )
+	SaveBaseTalents( BuildsTable[ index ] )
+	SaveFieldTalents( BuildsTable[ index ] )
+	SaveKeyBinding( BuildsTable[ index ] )
+	SaveBuildsTable()
+end
+
 function LoadBuild( build )
 	local hasLearnedTalent = LoadBaseTalents( build )
 	local hasLearnedField = LoadFieldTalents( build )
