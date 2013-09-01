@@ -97,21 +97,19 @@ function ClearActions( widget )
 end
 
 function CreateItemWidget( item )
-	local text = userMods.ToWString( item.name .. string.rep( " ", 40 ) ) -- poor man's left align
-
 	local widget
 	if item.submenu and item.onActivate then
 		widget = mainForm:CreateWidgetByDesc( CombinedTemplate )
-		widget:GetChildChecked( "CombinedItem", true ):SetVal( "button_label", text )
+		widget:GetChildChecked( "CombinedItem", true ):SetVal( "button_label", item.name )
 		SaveAction( widget:GetChildChecked( "CombinedItem", true ), item.onActivate )
 		SaveAction( widget:GetChildChecked( "CombinedSubmenu", true ), item.submenu )
 	elseif item.submenu then
 		widget = mainForm:CreateWidgetByDesc( SubmenuTemplate )
-		widget:SetVal( "button_label", text )
+		widget:SetVal( "button_label", item.name )
 		SaveAction( widget, item.submenu )
 	else
 		widget = mainForm:CreateWidgetByDesc( ItemTemplate )
-		widget:SetVal( "button_label", text )
+		widget:SetVal( "button_label", item.name )
 		if item.onActivate then
 			SaveAction( widget, item.onActivate )
 		end

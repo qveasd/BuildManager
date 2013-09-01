@@ -82,7 +82,8 @@ function ImportWikiLink( link )
 			return nil
 		end
 
-		build.talents[ TalentKey( math.floor( skill / size.linesCount ), mod( skill, size.linesCount ) ) ] = rank - 1
+		local key = TalentKey( math.floor( skill / size.linesCount ), mod( skill, size.linesCount ) )
+		build.talents[ key ] = rank - 1
 	end
 	for i = 0, 2 do
 		if not build.talents[ TalentKey( 0, i ) ] then
@@ -99,11 +100,13 @@ function ImportWikiLink( link )
 				return nil
 			end
 
-			build.fieldTalents[ FieldTalentKey( field, math.floor(talent / size.columnsCount), mod( talent, size.columnsCount ) ) ] = true
+			local key = FieldTalentKey( field, math.floor(talent / size.columnsCount), mod( talent, size.columnsCount ) )
+			build.fieldTalents[ key ] = true
 		end
 	end
 	for i = 0, size.fieldsCount - 1 do
-		if not build.fieldTalents[ FieldTalentKey( i, math.floor( size.rowsCount / 2 ), math.floor( size.columnsCount / 2 ) ) ] then
+		local key = FieldTalentKey( i, math.floor( size.rowsCount / 2 ), math.floor( size.columnsCount / 2 ) )
+		if not build.fieldTalents[ key ] then
 			return nil
 		end
 	end

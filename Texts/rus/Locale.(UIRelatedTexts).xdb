@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<UIRelatedTexts>
+	<items>
+		<Item>
+			<name>rename</name>
+			<resource href="rename.txt" />
+		</Item>
+		<Item>
+			<name>delete</name>
+			<resource href="delete.txt" />
+		</Item>
+		<Item>
+			<name>update</name>
+			<resource href="update.txt" />
+		</Item>
+		<Item>
+			<name>link</name>
+			<resource href="link.txt" />
+		</Item>
+	</items>
+</UIRelatedTexts>

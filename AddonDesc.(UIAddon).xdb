@@ -1,6 +1,8 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <UIAddon>
 	<Name>BuildManager</Name>
+	<localizedNameFileRef href="Texts/Name.txt" />
+	<localizedDescFileRef href="Texts/Desc.txt" />
 	<AutoStart>true</AutoStart>
 	<ScriptFileRefs>
 		<Item href="/Mods/SampleCommon/SampleAddonBase.lua" />
@@ -17,6 +19,16 @@
 			<Form href="MainForm.(WidgetForm).xdb#xpointer(/WidgetForm)" />
 		</Item>
 	</Forms>
+	<textsGroups>
+		<Item>
+			<groupName>eng</groupName>
+			<texts href="Texts/eng/Locale.(UIRelatedTexts).xdb#xpointer(/UIRelatedTexts)" />
+		</Item>
+		<Item>
+			<groupName>rus</groupName>
+			<texts href="Texts/rus/Locale.(UIRelatedTexts).xdb#xpointer(/UIRelatedTexts)" />
+		</Item>
+	</textsGroups>
 	<visObjects href="" />
 	<texts href="" />
 	<textures href="" />

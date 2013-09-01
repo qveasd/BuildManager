@@ -104,7 +104,23 @@ end
 
 ----------------------------------------------------------------------------------------------------
 
+function GetLocalizedText()
+	local localization = options.GetOptionsByCustomType( "interface_option_localization" )
+	local text = nil
+	if localization then
+		for _, id in localization do
+			local info = options.GetOptionInfo( id )
+			if info.values and info.baseIndex then
+				local locName = userMods.FromWString( info.values[info.baseIndex].name )
+				text = common.GetAddonRelatedTextGroup( locName )
+			end
+		end
+	end
+	return text or common.GetAddonRelatedTextGroup( "eng" )
+end
+
 local BuildsMenu = nil
+local Localization = GetLocalizedText()
 
 function onSaveBuild( params )
 	local wtEdit = params.widget:GetParent():GetChildChecked( "BuildNameEdit", true )
@@ -138,13 +154,17 @@ function onShowList( params )
 		for i, v in ipairs( BuildsTable ) do
 			local index = i
 			menu[i] = {
-				name = v.name,
+				name = userMods.ToWString( v.name ),
 				onActivate = function() LoadBuild( BuildsTable[ index ] ) end,
 				submenu = {
-					{ name = "Rename", onActivate = function() onRenameBuild( index ) end },
-					{ name = "Delete", onActivate = function() DeleteBuild( index ); onShowList(); onShowList() end },
-					{ name = "Update", onActivate = function() UpdateBuild( index ) end },
-					{ name = "AllodsWiki.ru link", submenu = { { createWidget = function() return createLinkEdit( index ) end } } },
+					{ name = Localization:GetText( "rename" ),
+						onActivate = function() onRenameBuild( index ) end },
+					{ name = Localization:GetText( "delete" ),
+						onActivate = function() DeleteBuild( index ); onShowList(); onShowList() end },
+					{ name = Localization:GetText( "update" ),
+						onActivate = function() UpdateBuild( index ) end },
+					{ name = Localization:GetText( "link" ),
+						submenu = { { createWidget = function() return createLinkEdit( index ) end } } },
 				}
 			}
 		end
