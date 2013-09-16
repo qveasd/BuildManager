@@ -15,7 +15,7 @@ function ExportWikiLink( build )
 		BARD		= "#9"
 	}
 
-	local codes = "abcdefghijklmnopqrstuvwxyz" .. "ABCDEFGHIJKLMNOPQRSTUVWXYZ" .. "0123456789"
+	local codes = "abcdefghijklmnopqrstuvwxyz" .. "ABCDEFGHIJKLMNOPQRSTUVWXYZ" .. "0123456789-"
 	function Code( index )
 		return string.sub( codes, index + 1, index + 1 )
 	end
@@ -63,12 +63,13 @@ function ImportWikiLink( link )
 	build.fieldTalents = {}
 	build.binding = {}
 
-	local codes = "abcdefghijklmnopqrstuvwxyz" .. "ABCDEFGHIJKLMNOPQRSTUVWXYZ" .. "0123456789"
+	local codes = "abcdefghijklmnopqrstuvwxyz" .. "ABCDEFGHIJKLMNOPQRSTUVWXYZ" .. "0123456789-"
 	function Number( code )
-		return string.find( codes, code ) - 1
+		local n = string.find( codes, code )
+		return n and n - 1
 	end
 
-	local iter = string.gfind( string.gsub( link, ".*#", "" ), "_[%a%d]+")
+	local iter = string.gfind( string.gsub( link, ".*#", "" ), "_[%a%d-]+")
 
 	local size = avatar.GetBaseTalentTableSize()
 	local talents = iter()
