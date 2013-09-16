@@ -2,7 +2,8 @@
 -- AddonManager support
 
 function onMemUsageRequest( params )
-	userMods.SendEvent( "U_EVENT_ADDON_MEM_USAGE_RESPONSE", { sender = common.GetAddonName(), memUsage = gcinfo() } )
+	userMods.SendEvent( "U_EVENT_ADDON_MEM_USAGE_RESPONSE",
+		{ sender = common.GetAddonName(), memUsage = gcinfo() } )
 end
 
 function onToggleDND( params )
@@ -26,6 +27,45 @@ function onInfoRequest( params )
 			showHideButton = true,
 			showSettingsButton = false,
 		} )
+	end
+end
+
+----------------------------------------------------------------------------------------------------
+-- AOPanel support
+
+local IsAOPanelEnabled = GetConfig( "EnableAOPanel" ) or GetConfig( "EnableAOPanel" ) == nil
+
+function onAOPanelStart( params )
+	if IsAOPanelEnabled then
+		local SetVal = { val = userMods.ToWString( "B" ) }
+		local params = { header = SetVal, ptype = "button", size = 32 }
+		userMods.SendEvent( "AOPANEL_SEND_ADDON",
+			{ name = "BuildManager", sysName = "BuildManager", param = params } )
+
+		mainForm:GetChildChecked( "ListButton", true ):Show( false )
+	end
+end
+
+function onAOPanelLeftClick( params )
+	if params.sender == "BuildManager" then
+		onShowList();
+	end
+end
+
+function onAOPanelChange( params )
+	if params.unloading and params.name == "UserAddon/AOPanelMod" then
+		mainForm:GetChildChecked( "ListButton", true ):Show( true )
+	end
+end
+
+function enableAOPanelIntegration( enable )
+	IsAOPanelEnabled = enable
+	SetConfig( "EnableAOPanel", enable )
+
+	if enable then
+		onAOPanelStart()
+	else
+		mainForm:GetChildChecked( "ListButton", true ):Show( true )
 	end
 end
 
@@ -76,13 +116,19 @@ function onSlashCommand( params )
 	local iter = string.gfind( userMods.FromWString( params.text ), "[^%s]+")
 
 	local cmd = iter()
-	if cmd ~= "/\241\242\224\242" and cmd ~= "\\\241\242\224\242" then
+	if cmd == "/buildmanager" or cmd == "\\buildmanager" then
+		local _, _, option, value = string.find( iter(), "(%w*)=(%w*)" )
+		if option == "aopanel" then
+			enableAOPanelIntegration( value == "true" )
+		end
+		return
+	elseif cmd ~= "/\241\242\224\242" and cmd ~= "\\\241\242\224\242" then
 		return
 	end
 
 	local commands = {}
 	for w in iter do
-		local count, len, stat, op, arg = string.find( w, "^([\192-\255])([+=]+)(%d*)" )
+		local _, _, stat, op, arg = string.find( w, "^([\192-\255])([+=]+)(%d*)" )
 
 		local statId = statIdTable[ stat ]
 		if statId then
@@ -171,8 +217,13 @@ function onShowList( params )
 		local desc = mainForm:GetChildChecked( "SaveBuildTemplate", false ):GetWidgetDesc()
 		table.insert( menu, { createWidget = function() return mainForm:CreateWidgetByDesc( desc ) end } )
 
-		local pos = mainForm:GetChildChecked( "ListButton", true ):GetPlacementPlain()
-		BuildsMenu = ShowMenu( { x = pos.posX, y = pos.posY + pos.sizeY }, menu )
+		local button = mainForm:GetChildChecked( "ListButton", true )
+		if button:IsVisible() then
+			local pos = button:GetPlacementPlain()
+			BuildsMenu = ShowMenu( { x = pos.posX, y = pos.posY + pos.sizeY }, menu )
+		else
+			BuildsMenu = ShowMenu( { x = 0, y = 32 }, menu )
+		end
 		BuildsMenu:GetChildChecked( "BuildNameEdit", true ):SetFocus( true )
 	else
 		DestroyMenu( BuildsMenu )
@@ -256,7 +307,11 @@ function Init()
 	common.RegisterEventHandler( onToggleDND, "SCRIPT_TOGGLE_DND" )
 	common.RegisterEventHandler( onToggleVisibility, "SCRIPT_TOGGLE_VISIBILITY" )
 
-	common.RegisterEventHandler( onSlashCommand, "EVENT_UNKNOWN_SLASH_COMMAND" );
+	common.RegisterEventHandler( onSlashCommand, "EVENT_UNKNOWN_SLASH_COMMAND" )
+
+	common.RegisterEventHandler( onAOPanelStart, "AOPANEL_START" )
+	common.RegisterEventHandler( onAOPanelLeftClick, "AOPANEL_BUTTON_LEFT_CLICK" )
+	common.RegisterEventHandler( onAOPanelChange, "EVENT_ADDON_LOAD_STATE_CHANGED" )
 
 	common.RegisterReactionHandler( onSaveBuild, "SaveBuildReaction" )
 	common.RegisterReactionHandler( onShowList, "ShowBuildsReaction" )
