@@ -164,9 +164,11 @@ function FloodFillTalents( build, field )
 end
 
 function LoadFieldTalents( build )
+	local hasLearnedField = false
 	for field = 0, avatar.GetFieldTalentTableSize().fieldsCount - 1 do
-		FloodFillTalents( build, field )
+		hasLearnedField = FloodFillTalents( build, field ) or hasLearnedField
 	end
+	return hasLearnedField
 end
 
 
