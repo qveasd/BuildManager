@@ -1,3 +1,6 @@
+
+local ListButton = mainForm:GetChildChecked( "ListButton", true )
+
 ----------------------------------------------------------------------------------------------------
 -- AddonManager support
 
@@ -8,7 +11,7 @@ end
 
 function onToggleDND( params )
 	if params.target == common.GetAddonName() then
-		DnD:Enable( mainForm:GetChildChecked( "ListButton", true ), params.state )
+		DnD:Enable( ListButton, params.state )
 	end
 end
 
@@ -40,21 +43,21 @@ function onAOPanelStart( params )
 		local SetVal = { val = userMods.ToWString( "B" ) }
 		local params = { header = SetVal, ptype = "button", size = 32 }
 		userMods.SendEvent( "AOPANEL_SEND_ADDON",
-			{ name = "BuildManager", sysName = "BuildManager", param = params } )
+			{ name = common.GetAddonName(), sysName = common.GetAddonName(), param = params } )
 
-		mainForm:GetChildChecked( "ListButton", true ):Show( false )
+		ListButton:Show( false )
 	end
 end
 
 function onAOPanelLeftClick( params )
-	if params.sender == "BuildManager" then
+	if params.sender == common.GetAddonName() then
 		onShowList();
 	end
 end
 
 function onAOPanelChange( params )
 	if params.unloading and params.name == "UserAddon/AOPanelMod" then
-		mainForm:GetChildChecked( "ListButton", true ):Show( true )
+		ListButton:Show( true )
 	end
 end
 
@@ -65,7 +68,7 @@ function enableAOPanelIntegration( enable )
 	if enable then
 		onAOPanelStart()
 	else
-		mainForm:GetChildChecked( "ListButton", true ):Show( true )
+		ListButton:Show( true )
 	end
 end
 
@@ -217,9 +220,8 @@ function onShowList( params )
 		local desc = mainForm:GetChildChecked( "SaveBuildTemplate", false ):GetWidgetDesc()
 		table.insert( menu, { createWidget = function() return mainForm:CreateWidgetByDesc( desc ) end } )
 
-		local button = mainForm:GetChildChecked( "ListButton", true )
-		if button:IsVisible() then
-			local pos = button:GetPlacementPlain()
+		if ListButton:IsVisible() then
+			local pos = ListButton:GetPlacementPlain()
 			BuildsMenu = ShowMenu( { x = pos.posX, y = pos.posY + pos.sizeY }, menu )
 		else
 			BuildsMenu = ShowMenu( { x = 0, y = 32 }, menu )
@@ -299,8 +301,7 @@ end
 function Init()
 	LoadBuildsTable()
 
-	local button = mainForm:GetChildChecked( "ListButton", true )
-	DnD:Init( 527, button, button, true )
+	DnD:Init( 527, ListButton, ListButton, true )
 
 	common.RegisterEventHandler( onInfoRequest, "SCRIPT_ADDON_INFO_REQUEST" )
 	common.RegisterEventHandler( onMemUsageRequest, "U_EVENT_ADDON_MEM_USAGE_REQUEST" )
