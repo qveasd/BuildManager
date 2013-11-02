@@ -1,8 +1,162 @@
 -- Import and export to/from external formats
 
+function ImportBuild( link )
+	return ImportWikiLink( link ) or ImportWikiLinkOld( link )
+end
 
--- Create a link to the build for the allodswiki.ru build calculator
+function ExportBuild( build )
+	return ExportWikiLink( build )
+end
+
+----------------------------------------------------------------------------------------------------
+-- link format:
+-- pts.allodswiki.ru/calc#!<class>!<talents>!<field1>!<field2>!<field3>
+-- <class> - integer class id
+-- <talents> - a letter for each skill (36 total), "." - not learned, otherwise skill level
+-- <fieldN> - <left> "/" <RIGHT>
+-- <left> - Make a 32-bit number from field talents row-wise from center (bit0) to upper left
+--					corner (bit31). Store it in base-26 with lowercase letters as digits, big-endian.
+-- <RIGHT> - Make a 32-bit number from field talents row-wise from center (bit0) to lower right
+--					 corner (bit31). Store it in base-26 with uppercase letters as digits, big-endian.
+
+local classIdTable = {
+	DRUID	= "5",
+	MAGE	= "2",
+	NECROMANCER	= "4",
+	PALADIN	= "7",
+	PRIEST	= "3",
+	PSIONIC	= "6",
+	STALKER	= "8",
+	WARRIOR	= "1",
+	BARD	= "9"
+}
+
+function tonumber26( s )
+	local n = 0
+	for i = string.len( s ), 1, -1 do
+		n = n * 26 + string.byte( s, i ) - string.byte( "a" )
+	end
+	return n
+end
+
+function tostring26( n )
+	local s = ""
+	if n == 0 then
+		return "a"
+	else
+		while n > 0 do
+			s = s .. string.char( string.byte( "a" ) + mod( n, 26 ) )
+			n = math.floor( n / 26 )
+		end
+	end
+	return s
+end
+
+function indexToPos( index )
+	local size = avatar.GetFieldTalentTableSize()
+	local offset = math.floor( size.columnsCount * size.rowsCount / 2 )
+	return { x = mod( index + offset, size.columnsCount ),
+			 y = math.floor( (index + offset) / size.columnsCount ) }
+end
+
+function ImportWikiLink( link )
+	local build = { talents = {}, fieldTalents = {}, binding = {} }
+
+	local iter = string.gfind( link, "!([^!]+)")
+	iter() -- skip class id
+
+	local talents = iter()
+	if not talents then
+		return nil
+	end
+	local size = avatar.GetBaseTalentTableSize()
+	for i = 1, string.len( talents ) do
+		local ch = string.sub( talents, i, i )
+		if not string.find( ".123", ch ) then
+			return nil
+		end
+
+		if ch ~= "." then
+		local key = TalentKey( math.floor( (i - 1) / size.linesCount ), mod( i - 1, size.linesCount ) )
+			build.talents[ key ] = tonumber( ch ) - 1
+		end
+	end
+
+	local size = avatar.GetFieldTalentTableSize()
+	for field = 0, size.fieldsCount - 1 do
+		local str = iter()
+		if not str then
+			return nil
+		end
+
+		local _, _, left, right = string.find( str, "(%a+)/(%a+)" )
+		if left == nil or right == nil then
+			return nil
+		end
+
+		left = tonumber26( left ) + 1
+		right = tonumber26( string.lower( right ) ) + 1
+		for i = 0, math.floor( size.columnsCount * size.rowsCount / 2 ) do
+			if mod( left, 2 ) > 0 then
+				local p = indexToPos( -i )
+				build.fieldTalents[ FieldTalentKey( field, p.y, p.x ) ] = true
+			end
+			left = math.floor( left / 2 )
+
+			if mod( right, 2 ) > 0 then
+				local p = indexToPos( i )
+				build.fieldTalents[ FieldTalentKey( field, p.y, p.x ) ] = true
+			end
+			right = math.floor( right / 2 )
+		end
+	end
+
+	return build
+end
+
 function ExportWikiLink( build )
+	local link = "http://pts.allodswiki.ru/calc#!" .. classIdTable[ avatar.GetClass() ] .. "!"
+
+	local size = avatar.GetBaseTalentTableSize()
+	for layer = 0, size.layersCount - 1 do
+		for line = 0, size.linesCount - 1 do
+			local rank = build.talents[ TalentKey( layer, line ) ]
+			if rank then
+				link = link .. ( rank + 1 )
+			else
+				link = link .. "."
+			end
+		end
+	end
+
+	local size = avatar.GetFieldTalentTableSize()
+	for field = 0, size.fieldsCount - 1 do
+		local left = 0
+		local right = 0
+		for i = math.floor( size.columnsCount * size.rowsCount / 2 ), 1, -1 do
+				local lp = indexToPos( -i )
+				if build.fieldTalents[ FieldTalentKey( field, lp.y, lp.x ) ] then
+					left = left + 1
+				end
+				left = left * 2
+
+				local rp = indexToPos( i )
+				if build.fieldTalents[ FieldTalentKey( field, rp.y, rp.x ) ] then
+					right = right + 1
+				end
+				right = right * 2
+		end
+
+		link = link .. "!" .. tostring26( left ) .. "/" .. string.upper( tostring26( right ) )
+	end
+
+	return link
+end
+
+----------------------------------------------------------------------------------------------------
+-- Create a link to the build for the allodswiki.ru build calculator
+
+function ExportWikiLinkOld( build )
 	local classIdTable = {
 		DRUID		= "_new#5",
 		MAGE		= "_new#2",
@@ -57,7 +211,7 @@ end
 
 -- Import build from a link to allodswiki.ru.
 -- Only talents and field talents are filled.
-function ImportWikiLink( link )
+function ImportWikiLinkOld( link )
 	local build = {}
 	build.talents = {}
 	build.fieldTalents = {}
@@ -114,3 +268,4 @@ function ImportWikiLink( link )
 
 	return build
 end
+

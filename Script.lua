@@ -177,7 +177,7 @@ function onSaveBuild( params )
 
 	if text ~= "" then
 		if string.find( text, "allodswiki.ru/" ) then
-			local build = ImportWikiLink( text )
+			local build = ImportBuild( text )
 			if build then
 				LoadBuild( build )
 			end
@@ -193,7 +193,7 @@ end
 function createLinkEdit( buildIndex )
 	local desc = mainForm:GetChildChecked( "WikiLinkEdit", false ):GetWidgetDesc()
 	local linkEdit = mainForm:CreateWidgetByDesc( desc )
-	linkEdit:SetText( userMods.ToWString( ExportWikiLink( BuildsTable[ buildIndex ] ) ) )
+	linkEdit:SetText( userMods.ToWString( ExportBuild( BuildsTable[ buildIndex ] ) ) )
 	return linkEdit
 end
 
