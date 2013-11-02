@@ -28,6 +28,10 @@
 			<groupName>rus</groupName>
 			<texts href="Texts/rus/Locale.(UIRelatedTexts).xdb#xpointer(/UIRelatedTexts)" />
 		</Item>
+		<Item>
+			<groupName>fra</groupName>
+			<texts href="Texts/fra/Locale.(UIRelatedTexts).xdb#xpointer(/UIRelatedTexts)" />
+		</Item>
 	</textsGroups>
 	<visObjects href="" />
 	<texts href="" />
