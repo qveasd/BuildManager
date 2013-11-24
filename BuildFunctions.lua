@@ -23,6 +23,24 @@ end
 
 ----------------------------------------------------------------------------------------------------
 
+function AddPanelCompatibility( params )
+	if BuildsTable[ params.index ] then
+		if not BuildsTable[ params.index ].binding then
+			BuildsTable[ params.index ].binding = {}
+		end
+		for i = 1, params.size do
+			if params.binding[ i ] then
+				BuildsTable[ params.index ].binding[ i + 100 ] =
+					{ type = params.binding[ i ].type, name = params.binding[ i ].name }
+			else
+				BuildsTable[ params.index ].binding[ i + 100 ] = nil
+			end
+		end
+		SaveBuildsTable()
+	end
+end
+common.RegisterEventHandler( AddPanelCompatibility, "ADD_PANEL_ANSWER_BUILD" )
+
 function SaveCurrentBuild( name )
 	local build = {}
 	build.name = name
@@ -32,6 +50,7 @@ function SaveCurrentBuild( name )
 
 	table.insert( BuildsTable, build )
 	SaveBuildsTable()
+	userMods.SendEvent( "BUILD_MANAGER_REQUEST_BILD", { index = table.getn(BuildsTable) } )
 end
 
 function UpdateBuild( index )
@@ -39,6 +58,7 @@ function UpdateBuild( index )
 	SaveFieldTalents( BuildsTable[ index ] )
 	SaveKeyBinding( BuildsTable[ index ] )
 	SaveBuildsTable()
+	userMods.SendEvent( "BUILD_MANAGER_REQUEST_BILD", { index = index } )
 end
 
 function LoadBuild( build )
@@ -49,13 +69,15 @@ function LoadBuild( build )
 		-- Wait until skills get learned, then bind the keys.
 		function OnTalentsLoaded()
 			LoadKeyBinding( build )
-			common.UnRegisterEventHandler( OnTalentsLoaded, "EVENT_TALENTS_CHANGED" ) 
+			common.UnRegisterEventHandler( OnTalentsLoaded, "EVENT_TALENTS_CHANGED" )
+			userMods.SendEvent( "BUILD_MANAGER_LOAD_BUILD", { binding = build.binding } )
 		end
 
 		common.RegisterEventHandler( OnTalentsLoaded, "EVENT_TALENTS_CHANGED" ) 
 		avatar.ApplyStoredTalents()
 	else
 		LoadKeyBinding( build )
+		userMods.SendEvent( "BUILD_MANAGER_LOAD_BUILD", { binding = build.binding } )
 	end
 end
 
