@@ -157,7 +157,19 @@ end
 function FloodFillTalents( build, field )
 	-- Flood-filling field talents starting from center of the field
 	local size = avatar.GetFieldTalentTableSize()
-	local center = { x = math.floor( size.rowsCount / 2 ), y = math.floor( size.columnsCount / 2 ) }
+
+	local center = { x = 0, y = 0 }
+	-- 5.0: first talent is no longer necessarily in the center, so search for it
+	for row = 0, size.rowsCount - 1 do
+		for col = 0, size.columnsCount - 1 do
+			local talent = avatar.GetFieldTalentInfo( field, row, col )
+			if talent and talent.isLearned then
+				center = { x = row, y = col }
+				break;
+			end
+		end
+	end
+
 	local learnedTalents = { [ FieldTalentKey( field, center.x, center.y ) ] = true }
 	local hasLearnedTalent = false
 
@@ -219,7 +231,13 @@ function SaveKeyBinding( build )
 		if action then
 			local actionName = ""
 			if action.type == ACTION_TYPE_SPELL then
-				actionName = userMods.FromWString( avatar.GetSpellObjectInfo( action.id ).name or "" )
+				local name;
+				if avatar.GetSpellObjectInfo then
+					name = avatar.GetSpellObjectInfo( action.id ).name
+				else -- AO 5.0
+					name = spellLib.GetDescription( spellLib.GetObjectSpell( action.id ) ).name
+				end
+				actionName = userMods.FromWString( name or "" )
 			elseif action.type == ACTION_TYPE_ITEM then
 				actionName = userMods.FromWString( avatar.GetItemInfo( action.id ).name or "" )
 			elseif action.type == ACTION_TYPE_MOUNT then
@@ -284,7 +302,8 @@ end
 function LoadKeyBinding( build )
 	-- Collect objects that can be bound to the action panel. If an item isn't in the player's
 	-- inventory anymore it won't get bound, but there seems to be no way of locating it.
-	local spells = CollectObjectIds( avatar.GetSpellBook(), avatar.GetSpellInfo )
+	local spells = CollectObjectIds(
+		avatar.GetSpellBook(), avatar.GetSpellInfo or spellLib.GetDescription)  -- AO 5.0
 	local items = CollectItemIds()
 	local emotes = CollectObjectIds( avatar.GetEmotes(), avatar.GetEmoteInfo )
 	local mountSkins = CollectMountSkinIds()

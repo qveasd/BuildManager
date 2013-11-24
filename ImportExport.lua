@@ -15,9 +15,9 @@ end
 -- <talents> - a letter for each skill (36 total), "." - not learned, otherwise skill level
 -- <fieldN> - <left> "/" <RIGHT>
 -- <left> - Make a 32-bit number from field talents row-wise from center (bit0) to upper left
---					corner (bit31). Store it in base-26 with lowercase letters as digits, big-endian.
+--					corner (bit31). Store it in base-26 with lowercase letters as digits, little-endian.
 -- <RIGHT> - Make a 32-bit number from field talents row-wise from center (bit0) to lower right
---					 corner (bit31). Store it in base-26 with uppercase letters as digits, big-endian.
+--					 corner (bit31). Store it in base-26 with uppercase letters as digits, little-endian.
 
 local classIdTable = {
 	DRUID	= "5",
@@ -28,10 +28,15 @@ local classIdTable = {
 	PSIONIC	= "6",
 	STALKER	= "8",
 	WARRIOR	= "1",
-	BARD	= "9"
+	BARD	= "9",
+	ENGINEER = "10"
 }
 
 function tonumber26( s )
+	if s == "a" then
+		return 1
+	end
+
 	local n = 0
 	for i = string.len( s ), 1, -1 do
 		n = n * 26 + string.byte( s, i ) - string.byte( "a" )
@@ -41,13 +46,9 @@ end
 
 function tostring26( n )
 	local s = ""
-	if n == 0 then
-		return "a"
-	else
-		while n > 0 do
-			s = s .. string.char( string.byte( "a" ) + mod( n, 26 ) )
-			n = math.floor( n / 26 )
-		end
+	while n > 0 do
+		s = s .. string.char( string.byte( "a" ) + mod( n, 26 ) )
+		n = math.floor( n / 26 )
 	end
 	return s
 end
@@ -94,8 +95,8 @@ function ImportWikiLink( link )
 			return nil
 		end
 
-		left = tonumber26( left ) + 1
-		right = tonumber26( string.lower( right ) ) + 1
+		left = tonumber26( left )
+		right = tonumber26( string.lower( right ) )
 		for i = 0, math.floor( size.columnsCount * size.rowsCount / 2 ) do
 			if mod( left, 2 ) > 0 then
 				local p = indexToPos( -i )

@@ -83,18 +83,36 @@ end
 -- /стат и=720 у+40 р++
 -- this makes intuition equal to 720, adds 40 points to precision and puts all the rest into intelligence
 
-local statIdTable = {
-	-- first letter -> corresponding stat
-	[ "\243" ] = INNATE_STAT_PRECISION, -- удача о_О
-	[ "\241" ] = INNATE_STAT_STRENGTH, -- сила
-	[ "\242" ] = INNATE_STAT_MIGHT, -- точность -_-
-	[ "\235" ] = INNATE_STAT_DEXTERITY, -- ловкость
-	[ "\240" ] = INNATE_STAT_INTELLECT, -- разум
-	[ "\232" ] = INNATE_STAT_INTUITION, -- интуиция
-	[ "\228" ] = INNATE_STAT_SPIRIT -- дух
-}
+-- first letter -> corresponding stat
+local statIdTable = {}
+if avatar.GetSpellInfo then -- AO 4.0
+	statIdTable = {
+		[ "\243" ] = INNATE_STAT_PRECISION, -- удача о_О
+		[ "\241" ] = INNATE_STAT_STRENGTH, -- сила
+		[ "\242" ] = INNATE_STAT_MIGHT, -- точность -_-
+		[ "\235" ] = INNATE_STAT_DEXTERITY, -- ловкость
+		[ "\240" ] = INNATE_STAT_INTELLECT, -- разум
+		[ "\232" ] = INNATE_STAT_INTUITION, -- интуиция
+		[ "\228" ] = INNATE_STAT_SPIRIT -- дух
+	}
+else
+	statIdTable = {
+		[ "\236" ] = ENUM_InnateStats_Plain, -- мастерство
+		[ "\240" ] = ENUM_InnateStats_Rage, -- решимость
+		[ "\225" ] = ENUM_InnateStats_Finisher, -- беспощадность
+		[ "\255" ] = ENUM_InnateStats_Lethality, -- ярость
+		[ "\241" ] = ENUM_InnateStats_Vitality, -- стойкость
+		[ "\226" ] = ENUM_InnateStats_Will, -- воля
+		[ "\234" ] = ENUM_InnateStats_Lifesteal, -- кровожадность
+		[ "\251" ] = ENUM_InnateStats_Endurance, -- выдержка
+	}
+end
 
 function multByTalents( statId, arg )
+	if not avatar.GetSpellInfo then -- AO 5.0
+		return math.ceil(arg)
+	end
+
 	-- calculate stat multiplier from talents
 	-- x points put into stat add x*statMultiplier points
 	local equipBonus = avatar.GetInnateStats()[ statId ].base + avatar.GetInnateStats()[ statId ].equipment
