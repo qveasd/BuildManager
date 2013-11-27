@@ -51,7 +51,7 @@ end
 
 function onAOPanelLeftClick( params )
 	if params.sender == common.GetAddonName() then
-		onShowList();
+		onShowList()
 	end
 end
 
@@ -208,30 +208,42 @@ function onSaveBuild( params )
 	end
 end
 
-function createLinkEdit( buildIndex )
+function createLinkEdit( build )
 	local desc = mainForm:GetChildChecked( "WikiLinkEdit", false ):GetWidgetDesc()
 	local linkEdit = mainForm:CreateWidgetByDesc( desc )
-	linkEdit:SetText( userMods.ToWString( ExportBuild( BuildsTable[ buildIndex ] ) ) )
+	linkEdit:SetText( userMods.ToWString( ExportBuild( build ) ) )
 	return linkEdit
 end
 
+function getBuildIndex( build )
+	for i = 1, table.getn( BuildsTable ) do
+		if BuildsTable[i] == build then
+			return i
+		end
+	end
+end
+
 function onShowList( params )
+	if DnD:IsDragging() then
+		return
+	end
+
 	if not BuildsMenu or not BuildsMenu:IsValid() then
 		local menu = {}
 		for i, v in ipairs( BuildsTable ) do
-			local index = i
+			local build = BuildsTable[i]
 			menu[i] = {
 				name = userMods.ToWString( v.name ),
-				onActivate = function() LoadBuild( BuildsTable[ index ] ) end,
+				onActivate = function() LoadBuild( build ) end,
 				submenu = {
 					{ name = Localization:GetText( "rename" ),
-						onActivate = function() onRenameBuild( index ) end },
+						onActivate = function() onRenameBuild( build ) end },
 					{ name = Localization:GetText( "delete" ),
-						onActivate = function() DeleteBuild( index ); onShowList(); onShowList() end },
+						onActivate = function() DeleteBuild( getBuildIndex( build ) ); onShowList(); onShowList() end },
 					{ name = Localization:GetText( "update" ),
-						onActivate = function() UpdateBuild( index ) end },
+						onActivate = function() UpdateBuild( getBuildIndex( build ) ) end },
 					{ name = Localization:GetText( "link" ),
-						submenu = { { createWidget = function() return createLinkEdit( index ) end } } },
+						submenu = { { createWidget = function() return createLinkEdit( build ) end } } },
 				}
 			}
 		end
@@ -244,6 +256,7 @@ function onShowList( params )
 		else
 			BuildsMenu = ShowMenu( { x = 0, y = 32 }, menu )
 		end
+		RegisterDnd()
 		BuildsMenu:GetChildChecked( "BuildNameEdit", true ):SetFocus( true )
 	else
 		DestroyMenu( BuildsMenu )
@@ -256,7 +269,7 @@ end
 
 local RenameBuildIndex = nil
 
-function GetMenuItem( index )
+function GetMenuItems()
 	local children = BuildsMenu:GetNamedChildren()
 	table.sort( children,
 		function( a, b )
@@ -264,21 +277,21 @@ function GetMenuItem( index )
 			if b:GetName() == "ItemEditTemplate" then return true end
 			return a:GetPlacementPlain().posY < b:GetPlacementPlain().posY
 		end )
-	return children[ index ]
+	return children
 end
 
-function onRenameBuild( index )
+function onRenameBuild( build )
 	if RenameBuildIndex then
 		onRenameCancel()
 	end
 
-	RenameBuildIndex = index
+	RenameBuildIndex = getBuildIndex( build )
 
-	local item = GetMenuItem( index )
+	local item = GetMenuItems()[ RenameBuildIndex ]
 	item:Show( false )
 
 	local edit = BuildsMenu:GetChildChecked( "ItemEditTemplate", false )
-	edit:SetText( userMods.ToWString( BuildsTable[ index ].name ) )
+	edit:SetText( userMods.ToWString( build.name ) )
 	edit:SetPlacementPlain( item:GetPlacementPlain() )
 	edit:Show( true )
 	edit:Enable( true )
@@ -287,7 +300,7 @@ function onRenameBuild( index )
 end
 
 function onRenameCancel( params )
-	local item = GetMenuItem( RenameBuildIndex )
+	local item = GetMenuItems()[ RenameBuildIndex ]
 	item:Show( true )
 
 	local edit = BuildsMenu:GetChildChecked( "ItemEditTemplate", false )
@@ -315,6 +328,104 @@ function onRenameFocus( params )
 end
 
 ----------------------------------------------------------------------------------------------------
+-- DnD support
+
+local BaseDndId = 148754378
+local DraggedItem = nil
+local DragFrom = nil
+local DragTo = nil
+
+function IsDragging()
+	return DraggedItem ~= nil
+end
+
+function RegisterDnd()
+	local children = GetMenuItems()
+	for i, child in ipairs(children) do
+		local nameWidget = child:GetChildUnchecked( "CombinedItem", false )
+		if nameWidget then
+			mission.DNDRegister( nameWidget, BaseDndId + i, true )
+		end
+	end
+end
+
+function OnDndPick( params )
+	if BaseDndId <= params.srcId and params.srcId <= BaseDndId + table.getn(BuildsTable) then
+		DraggedItem = params.srcWidget:GetParent()
+
+		local children = GetMenuItems()
+		DragFrom = 1
+		while children[DragFrom]:GetInstanceId() ~= DraggedItem:GetInstanceId() do
+			DragFrom = DragFrom + 1
+			if DragFrom > table.getn(BuildsTable) then
+				return
+			end
+		end
+
+		if RenameBuildIndex then
+			onRenameCancel()
+		end
+
+		common.RegisterEventHandler( OnDndDragTo, "EVENT_DND_DRAG_TO" )
+		common.RegisterEventHandler( OnDndEnd, "EVENT_DND_DROP_ATTEMPT" )
+		common.RegisterEventHandler( OnDndEnd, "EVENT_DND_DRAG_CANCELLED" )
+		mission.DNDConfirmPickAttempt()
+	end
+end
+
+function OnDndDragTo( params )
+	local posConverter = widgetsSystem:GetPosConverterParams()
+	local cursorY = params.posY * posConverter.fullVirtualSizeY / posConverter.realSizeY
+	local cursorY = cursorY - DraggedItem:GetParent():GetPlacementPlain().posY
+
+	local children = GetMenuItems()
+	local childrenPos = {}
+	local dragIndex = nil
+
+	local height = 16
+	for i, w in ipairs( children ) do
+		if w:GetInstanceId() == DraggedItem:GetInstanceId() then
+			dragIndex = i
+		end
+		childrenPos[ i ] = w:GetPlacementPlain()
+		childrenPos[ i ].posY = height
+		height = height + childrenPos[ i ].sizeY
+	end
+
+	DragTo = dragIndex
+	if cursorY < childrenPos[dragIndex].posY then
+		while DragTo > 1 and cursorY < childrenPos[DragTo].posY do
+			DragTo = DragTo - 1
+		end
+	else
+		while DragTo < table.getn(BuildsTable) and cursorY > childrenPos[DragTo].posY + childrenPos[DragTo].sizeY do
+			DragTo = DragTo + 1
+		end
+	end
+	table.insert( children, DragTo, table.remove( children, dragIndex ) )
+
+	for i, w in ipairs( children ) do
+		w:PlayMoveEffect( w:GetPlacementPlain(), childrenPos[i], 100, EA_MONOTONOUS_INCREASE )
+	end
+end
+
+function OnDndEnd( params )
+	if DragFrom ~= DragTo then
+		table.insert( BuildsTable, DragTo, table.remove( BuildsTable, DragFrom ) )
+		SaveBuildsTable()
+	end
+
+	DraggedItem = nil
+	DragFrom = nil
+	DragTo = nil
+
+	common.UnRegisterEventHandler( OnDndDragTo, "EVENT_DND_DRAG_TO" )
+	common.UnRegisterEventHandler( OnDndEnd, "EVENT_DND_DROP_ATTEMPT" )
+	common.UnRegisterEventHandler( OnDndEnd, "EVENT_DND_DRAG_CANCELLED" )
+	mission.DNDConfirmDropAttempt()
+end
+
+----------------------------------------------------------------------------------------------------
 
 function Init()
 	LoadBuildsTable()
@@ -338,6 +449,8 @@ function Init()
 	common.RegisterReactionHandler( onRenameAccept, "RenameBuildReaction" )
 	common.RegisterReactionHandler( onRenameFocus, "RenameFocusChanged" )
 	common.RegisterReactionHandler( onShowList, "WikiEscReaction" )
+
+	common.RegisterEventHandler( OnDndPick, "EVENT_DND_PICK_ATTEMPT" )
 
 	InitMenu()
 end

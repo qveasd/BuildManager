@@ -140,7 +140,7 @@ end
 -- Reaction handlers
 
 function OnActivate( params )
-	if params.active then
+	if params.active and not IsDragging() then
 		local action = Actions[ params.widget:GetInstanceId() ]
 
 		local menu = GetParentMenu( params.widget )
