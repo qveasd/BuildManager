@@ -220,6 +220,14 @@ function MountSkinKey( skinId )
 	return ""
 end
 
+function GetItemInfo( id )
+	if avatar.GetItemInfo then -- pre 5.0.1
+		return avatar.GetItemInfo( id )
+	else
+		return itemLib.GetItemInfo( id )
+	end
+end
+
 function SaveKeyBinding( build )
 	-- SpellId changes from session to session, sysName is empty for a lot of spells, so the only
 	-- choice left for a permanent object identifier is objectInfo.name
@@ -239,7 +247,7 @@ function SaveKeyBinding( build )
 				end
 				actionName = userMods.FromWString( name or "" )
 			elseif action.type == ACTION_TYPE_ITEM then
-				actionName = userMods.FromWString( avatar.GetItemInfo( action.id ).name or "" )
+				actionName = userMods.FromWString( GetItemInfo( action.id ).name or "" )
 			elseif action.type == ACTION_TYPE_MOUNT then
 				actionName = MountSkinKey( action.id )
 			elseif action.type == ACTION_TYPE_EMOTE then
@@ -265,7 +273,7 @@ end
 function CollectTrinketId( items, equipType )
 	local trinkId = unit.GetEquipmentItemId( avatar.GetId(), DRESS_SLOT_TRINKET, equipType )
 	if trinkId then
-		local trinkInfo = avatar.GetItemInfo( trinkId )
+		local trinkInfo = GetItemInfo( trinkId )
 		if trinkInfo then
 			items[ userMods.FromWString( trinkInfo.name ) ] = trinkId
 		end
@@ -273,7 +281,7 @@ function CollectTrinketId( items, equipType )
 end
 
 function CollectItemIds()
-	local items = CollectObjectIds( avatar.GetInventoryItemIds(), avatar.GetItemInfo )
+	local items = CollectObjectIds( avatar.GetInventoryItemIds(), GetItemInfo )
 	CollectTrinketId( items, ITEM_CONT_EQUIPMENT )
 	CollectTrinketId( items, ITEM_CONT_EQUIPMENT_RITUAL )
 	return items
