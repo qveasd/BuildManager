@@ -62,10 +62,13 @@ function UpdateBuild( index )
 end
 
 function LoadBuild( build )
-	local hasLearnedTalent = LoadBaseTalents( build )
-	local hasLearnedField = LoadFieldTalents( build )
+	local freeRubies = avatar.GetViewedBuildFreeRubyPoints()
+	local freeTalents = avatar.GetViewedBuildFreeTalentPoints()
+	local learnedTalentsCount = LoadBaseTalents( build )
+	local learnedFieldsCount = LoadFieldTalents( build )
 
-	if hasLearnedTalent or hasLearnedField then
+	if learnedTalentsCount <= freeTalents and learnedFieldsCount <= freeRubies and
+		(learnedTalentsCount > 0 or learnedFieldsCount > 0) then
 		-- Wait until skills get learned, then bind the keys.
 		function OnTalentsLoaded()
 			LoadKeyBinding( build )
@@ -76,6 +79,9 @@ function LoadBuild( build )
 		common.RegisterEventHandler( OnTalentsLoaded, "EVENT_TALENTS_CHANGED" ) 
 		avatar.ApplyStoredTalents()
 	else
+		if learnedTalentsCount > 0 or learnedFieldsCount > 0 then
+			avatar.ApplyStoredTalents() -- as a way of cancelling changes
+		end
 		LoadKeyBinding( build )
 		userMods.SendEvent( "BUILD_MANAGER_LOAD_BUILD", { binding = build.binding } )
 	end
@@ -108,7 +114,7 @@ function SaveBaseTalents( build )
 end
 
 function LoadBaseTalents( build )
-	local hasLearnedTalent = false
+	local learnedTalentsCount = 0
 
 	local size = avatar.GetBaseTalentTableSize()
 	for layer = 0, size.layersCount - 1 do
@@ -122,13 +128,13 @@ function LoadBaseTalents( build )
 
 				for i = curRank, rank - 1 do
 					avatar.StoreBaseTalent( layer, line )
-					hasLearnedTalent = true
+					learnedTalentsCount = learnedTalentsCount + i + 2
 				end
 			end
 		end
 	end
 
-	return hasLearnedTalent
+	return learnedTalentsCount
 end
 
 ----------------------------------------------------------------------------------------------------
@@ -171,7 +177,7 @@ function FloodFillTalents( build, field )
 	end
 
 	local learnedTalents = { [ FieldTalentKey( field, center.x, center.y ) ] = true }
-	local hasLearnedTalent = false
+	local learnedFieldsCount = 0
 
 	function ApplyAdjacentTalents( x, y )
 		ApplyAdjacentTalent( x + 1, y )
@@ -185,8 +191,11 @@ function FloodFillTalents( build, field )
 		local isLearned = learnedTalents[ FieldTalentKey( field, x, y ) ]
 
 		if isInBuild and not isLearned then
-			avatar.StoreFieldTalent( field, x, y )
-			hasLearnedTalent = true
+			local talent = avatar.GetFieldTalentInfo( field, x, y )
+			if talent and not talent.isLearned then
+				avatar.StoreFieldTalent( field, x, y )
+				learnedFieldsCount = learnedFieldsCount + 1
+			end
 			learnedTalents[ FieldTalentKey( field, x, y ) ] = true
 
 			ApplyAdjacentTalents( x, y )
@@ -194,15 +203,15 @@ function FloodFillTalents( build, field )
 	end
 
 	ApplyAdjacentTalents( center.x, center.y )
-	return hasLearnedTalent
+	return learnedFieldsCount
 end
 
 function LoadFieldTalents( build )
-	local hasLearnedField = false
+	local learnedFieldsCount = 0
 	for field = 0, avatar.GetFieldTalentTableSize().fieldsCount - 1 do
-		hasLearnedField = FloodFillTalents( build, field ) or hasLearnedField
+		learnedFieldsCount = FloodFillTalents( build, field ) + learnedFieldsCount
 	end
-	return hasLearnedField
+	return learnedFieldsCount
 end
 
 
