@@ -33,10 +33,6 @@ local classIdTable = {
 }
 
 function tonumber26( s )
-	if s == "a" then
-		return 1
-	end
-
 	local n = 0
 	for i = string.len( s ), 1, -1 do
 		n = n * 26 + string.byte( s, i ) - string.byte( "a" )
@@ -90,13 +86,10 @@ function ImportWikiLink( link )
 			return nil
 		end
 
-		local _, _, left, right = string.find( str, "(%a+)/(%a+)" )
-		if left == nil or right == nil then
-			return nil
-		end
-
+		local _, _, left, right = string.find( str, "(%a*)/(%a*)" )
 		left = tonumber26( left )
 		right = tonumber26( string.lower( right ) )
+
 		for i = 0, math.floor( size.columnsCount * size.rowsCount / 2 ) do
 			if mod( left, 2 ) > 0 then
 				local p = indexToPos( -i )
