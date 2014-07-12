@@ -63,7 +63,7 @@ end
 function ImportWikiLink( link )
 	local build = { talents = {}, fieldTalents = {}, binding = {} }
 
-	local iter = string.gfind( link, "!([^!]+)")
+	local iter = string.gmatch( link, "!([^!]+)")
 	iter() -- skip class id
 
 	local talents = iter()
@@ -224,7 +224,7 @@ function ImportWikiLinkOld( link )
 		return n and n - 1
 	end
 
-	local iter = string.gfind( string.gsub( link, ".*#", "" ), "_[%a%d-]+")
+	local iter = string.gmatch( string.gsub( link, ".*#", "" ), "_[%a%d-]+")
 
 	local size = avatar.GetBaseTalentTableSize()
 	local talents = iter()

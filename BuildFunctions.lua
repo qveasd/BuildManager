@@ -270,7 +270,7 @@ end
 function CollectObjectIds( objects, GetInfoFunc )
 	local objectIds = {}
 
-	for i, id in objects do
+	for i, id in pairs(objects) do
 		local objectInfo = GetInfoFunc( id )
 		if objectInfo then
 			objectIds[ userMods.FromWString( objectInfo.name ) ] = id
@@ -299,8 +299,8 @@ end
 function CollectMountSkinIds()
 	local skins = {}
 
-	for i, mountId in mount.GetMounts() do
-		for j, skinId in mount.GetMountSkins( mountId ) do
+	for i, mountId in pairs(mount.GetMounts()) do
+		for j, skinId in pairs(mount.GetMountSkins( mountId )) do
 			local key = MountSkinKey( skinId )
 			if key then
 				skins[ key ] = skinId

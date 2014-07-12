@@ -75,7 +75,7 @@ end
 -- INTERNAL FUNCTIONS
 function DnD.GetWidgetID( wtWidget )
 	local WtId = wtWidget:GetInstanceId()
-	for ID, W in DnD.Widgets do
+	for ID, W in pairs(DnD.Widgets) do
 		if W.wtReacting:GetInstanceId() == WtId or W.wtMovable:GetInstanceId() == WtId then
 			return ID
 		end
@@ -170,7 +170,7 @@ end
 function DnD.OnResolutionChanged()
 	DnD.OnDragCancelled()
 	DnD.Screen = widgetsSystem:GetPosConverterParams()
-	for ID, W in DnD.Widgets do
+	for ID, W in pairs(DnD.Widgets) do
 		if W.fLockedToScreenArea then
 			local InitialPlace = W.wtMovable:GetPlacementPlain()
 			InitialPlace.posX = W.Initial.X

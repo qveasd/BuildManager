@@ -134,7 +134,7 @@ end
 
 -- Parse a slash command
 function onSlashCommand( params )
-	local iter = string.gfind( userMods.FromWString( params.text ), "[^%s]+")
+	local iter = string.gmatch( userMods.FromWString( params.text ), "[^%s]+")
 
 	local cmd = iter()
 	if cmd == "/buildmanager" or cmd == "\\buildmanager" then
@@ -175,7 +175,7 @@ function GetLocalizedText()
 	local localization = options.GetOptionsByCustomType( "interface_option_localization" )
 	local text = nil
 	if localization then
-		for _, id in localization do
+		for _, id in pairs(localization) do
 			local info = options.GetOptionInfo( id )
 			if info.values and info.baseIndex then
 				local locName = userMods.FromWString( info.values[info.baseIndex].name )
