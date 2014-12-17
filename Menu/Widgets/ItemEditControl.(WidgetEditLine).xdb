@@ -29,7 +29,7 @@
 	<fade>1</fade>
 	<selectionLayer href="../Textures/Selection.(WidgetLayerSimpleTexture).xdb#xpointer(/WidgetLayerSimpleTexture)" />
 	<Cursor1Layer href="../Textures/Cursor.(WidgetLayerSimpleTexture).xdb#xpointer(/WidgetLayerSimpleTexture)" />
-	<Cursor2Layer href="" />
+	<Cursor2Layer href="../Textures/Cursor2.(WidgetLayerSimpleTexture).xdb#xpointer(/WidgetLayerSimpleTexture)" />
 	<CursorWidth>2</CursorWidth>
 	<CursorChangeTimeMs>500</CursorChangeTimeMs>
 	<ReactionEsc>RenameCancelReaction</ReactionEsc>
