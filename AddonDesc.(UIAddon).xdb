@@ -32,6 +32,10 @@
 			<groupName>fra</groupName>
 			<texts href="Texts/fra/Locale.(UIRelatedTexts).xdb#xpointer(/UIRelatedTexts)" />
 		</Item>
+		<Item>
+			<groupName>ger</groupName>
+			<texts href="Texts/ger/Locale.(UIRelatedTexts).xdb#xpointer(/UIRelatedTexts)" />
+		</Item>
 	</textsGroups>
 	<visObjects href="" />
 	<texts href="" />
